@@ -85,6 +85,8 @@ typedef struct Bill_tag {
 	__int64 interval;
 	__int64 votes_for;
 	__int64 votes_against;
+	Voucher* vouchers_for;
+	Voucher* vouchers_against;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
