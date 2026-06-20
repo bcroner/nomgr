@@ -39,6 +39,12 @@ typedef struct Barter_System_tag {
 
 };
 
+typedef struct Offer_Triggered_Trade_Queue_tag {
+
+	__int64* offers;
+	
+} Offer_Triggered_Trade_Queue;
+
 typedef struct Article_V_Option_tag {
 
 	char* source;
