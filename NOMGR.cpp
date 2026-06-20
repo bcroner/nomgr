@@ -647,13 +647,13 @@ bool SATSolver_isSat(SATSolver* s, bool* sln) {
 
 std::mutex mtx;
 
-void thread_2SAT(bool* arr, bool* is_sat, __int64** lst, __int64 k_parm, __int64 n_parm, __int64 chops, __int64 chop, __int64 leading_trues) {
+void thread_2SAT(bool* arr, bool* is_sat, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues) {
 
     if (*is_sat)
         return;
 
     SATSolver* s = new SATSolver();
-    SATSolver_create(s, lst, k_parm, n_parm, chops, chop, leading_trues);
+    SATSolver_create(s, lst_l_parm, lst_r_parm, k_parm, n_parm, is_f, is_t, chops, chop, leading_trues);
 
     *is_sat |= SATSolver_isSat(s, arr);
 
@@ -661,7 +661,7 @@ void thread_2SAT(bool* arr, bool* is_sat, __int64** lst, __int64 k_parm, __int64
     delete s;
 }
 
-bool SATSolver_threads(__int64** lst, __int64 k_parm, __int64 n_parm, bool* arr, __int64 leading_trues) {
+bool SATSolver_threads(bool* arr, bool* is_sat, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues) {
 
     __int64 num_threads = std::thread::hardware_concurrency();
     if (num_threads <= 0) num_threads = 1;
@@ -689,7 +689,7 @@ bool SATSolver_threads(__int64** lst, __int64 k_parm, __int64 n_parm, bool* arr,
 
     // Scheduling the consumers
     for (__int64 i = 0; i < search_sz; i++) {
-        list.push_back(pool_of_consumers.schedule(thread_2SAT, arr, &is_sat, lst, k_parm, n_parm, chops, i, leading_trues));
+        list.push_back(pool_of_consumers.schedule(thread_2SAT, arr, &is_sat, lst_l_parm, lst_r_parm, k_parm, n_parm, is_f, is_t, chops, chop, leading_trues));
     }
 
     // Waiting for the consumers to complete.
