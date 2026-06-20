@@ -18,8 +18,6 @@
 #include <condition_variable>
 #include <mutex>
 
-using namespace std;
-
 Article_V_Option* simp_article_v_option_vector_create(__int64 init_sz) {
 
     Article_V_Option* ret = new Article_V_Option[init_sz];
