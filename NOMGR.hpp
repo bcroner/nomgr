@@ -88,6 +88,7 @@ typedef struct Bill_tag {
 	char* title;
 	char* description;
 	char* media_url;
+	__int64 classification;
 	__int64 interval;
 	__int64 votes_for;
 	__int64 votes_against;
@@ -113,6 +114,7 @@ typedef struct Law_tag {
 	char* title;
 	char* description;
 	char* media_url;
+	__int64 classification;
 	__int64 valid_start;
 	__int64 valid_end;
 
