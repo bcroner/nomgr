@@ -124,6 +124,13 @@ typedef struct Code_tag {
 
 } Code;
 
+typedef struct Legal_System_tag {
+
+	Code civil_code;
+	Code penal_code;
+
+} Legal_System;
+
 typedef struct Gold_Deposit_tag {
 
 	__int64 id;
