@@ -6,13 +6,23 @@
 
 typedef struct Article_V_Convention_tag {
 
+	char* source;
 	__int64 interval;
+	__int64 votes_for;
+	__int64 votes_against;
+	__int64 gold_microgram_value_for;
+	__int64 gold_microgram_value_against;
 
 } Article_V_Convention ;
 
 typedef struct Rollback_Article_V_Convention_tag {
 
+	char* source;
 	__int64 interval;
+	__int64 votes_for;
+	__int64 votes_against;
+	__int64 gold_microgram_value_for;
+	__int64 gold_microgram_value_against;
 
 } Rollback_Article_V_Convention;
 
