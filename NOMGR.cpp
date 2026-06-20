@@ -55,6 +55,42 @@ void simp_voucher_vector_append(Voucher*** v, __int64* vtop, __int64* vcap, Vouc
 
 }
 
+Offer* simp_offer_vector_create(__int64 init_sz) {
+
+    Offer* ret = new Offer[init_sz];
+    return ret;
+
+}
+
+Offer* simp_offer_vector_read(Offer** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_offer_vector_append(Offer*** v, __int64* vtop, __int64* vcap, Offer* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Offer** newv = new Offer * [*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+
+}
+
+
 Bill* simp_bill_vector_create(__int64 init_sz) {
 
     Bill* ret = new Bill[init_sz];

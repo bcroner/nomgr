@@ -22,6 +22,23 @@ typedef struct Voucher_System_tag {
 
 } Voucher_System;
 
+typedef struct Offer_tag {
+
+	Voucher* give;
+	Voucher* receive;
+	__int64 give_gold_microgram_value;
+	__int64 receive_gold_microgram_value;
+	__int64 valid_start;
+	__int64 valid_end;
+
+} Offer;
+
+typedef struct Barter_System_tag {
+
+	Offer* offers;
+
+};
+
 typedef struct Article_V_Convention_tag {
 
 	char* source;
@@ -152,6 +169,9 @@ typedef struct SATSolver_tag {
 Voucher* simp_voucher_vector_create(__int64 init_sz);
 Voucher* simp_voucher_vector_read(Voucher** v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_voucher_vector_append(Voucher*** v, __int64* vtop, __int64* vcap, Voucher* data);
+Offer* simp_offer_vector_create(__int64 init_sz);
+Offer* simp_offer_vector_read(Offer** v, __int64 vtop, __int64 vcap, __int64 loc);
+void simp_offer_vector_append(Offer*** v, __int64* vtop, __int64* vcap, Offer* data);
 Bill* simp_bill_vector_create(__int64 init_sz);
 Bill* simp_bill_vector_read(Bill** v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_bill_vector_append(Bill*** v, __int64* vtop, __int64* vcap, Bill* data);
