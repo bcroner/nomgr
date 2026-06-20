@@ -4,28 +4,6 @@
 #define TRUE_2SAT 1
 #define FALSE_2SAT -1
 
-typedef struct Article_V_Convention_tag {
-
-	char* source;
-	__int64 interval;
-	__int64 votes_for;
-	__int64 votes_against;
-	__int64 gold_microgram_value_for;
-	__int64 gold_microgram_value_against;
-
-} Article_V_Convention ;
-
-typedef struct Rollback_Article_V_Convention_tag {
-
-	char* source;
-	__int64 interval;
-	__int64 votes_for;
-	__int64 votes_against;
-	__int64 gold_microgram_value_for;
-	__int64 gold_microgram_value_against;
-
-} Rollback_Article_V_Convention;
-
 typedef struct Voucher_tag {
 
 	__int64 id;
@@ -37,6 +15,87 @@ typedef struct Voucher_tag {
 	__int64 gold_microgram_value;
 
 } Voucher;
+
+typedef struct Article_V_Convention_tag {
+
+	char* source;
+	char* title;
+	char* description;
+	char* media_url;
+	__int64 interval;
+	__int64 votes_for;
+	__int64 votes_against;
+	__int64 gold_microgram_value_for;
+	__int64 gold_microgram_value_against;
+
+} Article_V_Convention ;
+
+typedef struct Rollback_Article_V_Convention_tag {
+
+	char* source;
+	char* title;
+	char* description;
+	char* media_url;
+	__int64 interval;
+	__int64 votes_for;
+	__int64 votes_against;
+	__int64 gold_microgram_value_for;
+	__int64 gold_microgram_value_against;
+
+} Rollback_Article_V_Convention;
+
+typedef struct Bill_tag {
+
+	char* title;
+	char* description;
+	char* media_url;
+	__int64 interval;
+	__int64 votes_for;
+	__int64 votes_against;
+	__int64 gold_microgram_value_for;
+	__int64 gold_microgram_value_against;
+
+} Bill ;
+
+typedef struct Legislative_Session_tag {
+
+	char* title;
+	char* description;
+	char* media_url;
+	__int64 interval;
+	Bill* bill;
+
+} Legislative_Session;
+
+typedef struct Law_tag {
+
+	char* title;
+	char* description;
+	char* media_url;
+	__int64 valid_start;
+	__int64 valid_end;
+
+} Law;
+
+typedef struct Code_tag {
+
+	Law* laws;
+
+} Code;
+
+typedef struct Gold_Deposit_tag {
+
+	__int64 id;
+	__int64 deposit_date;
+	__int64 gold_microgram_value;
+
+} Gold_Deposit;
+
+typedef struct Vault_tag {
+
+	Gold_Deposit* gold_deposits;
+
+} Vault;
 
 typedef struct Simp_Queue_tag {
 
