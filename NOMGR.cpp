@@ -20,6 +20,146 @@
 
 using namespace std;
 
+Voucher* simp_voucher_vector_create(__int64 init_sz) {
+
+    Voucher* ret = new Voucher[init_sz];
+    return ret;
+
+}
+
+Voucher* simp_voucher_vector_read(Voucher** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_voucher_vector_append(Voucher*** v, __int64* vtop, __int64* vcap, Voucher* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Voucher** newv = new Voucher*[*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+
+}
+
+Bill* simp_bill_vector_create(__int64 init_sz) {
+
+    Bill* ret = new Bill[init_sz];
+    return ret;
+
+}
+
+Bill* simp_bill_vector_read(Bill** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_bill_vector_append(Bill*** v, __int64* vtop, __int64* vcap, Bill* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Bill** newv = new Bill* [*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+
+}
+
+Law* simp_law_vector_create(__int64 init_sz) {
+
+    Law* ret = new Law[init_sz];
+    return ret;
+
+}
+
+Law* simp_law_vector_read(Law** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_law_vector_append(Law*** v, __int64* vtop, __int64* vcap, Law* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Law** newv = new Law * [*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+
+}
+
+Gold_Deposit* simp_gold_deposit_vector_create(__int64 init_sz) {
+
+    Gold_Deposit* ret = new Gold_Deposit[init_sz];
+    return ret;
+
+}
+
+Gold_Deposit* simp_gold_deposit_vector_read(Gold_Deposit** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_gold_deposit_vector_append(Gold_Deposit*** v, __int64* vtop, __int64* vcap, Gold_Deposit* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Gold_Deposit** newv = new Gold_Deposit * [*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+
+}
+
 char* simp_char_vector_create(__int64 init_sz) {
 
     char* ret = new char[init_sz];
@@ -35,7 +175,7 @@ char simp_char_vector_read(char* v, __int64 vtop, __int64 vcap, __int64 loc) {
     return v[loc];
 }
 
-void simp_char_vector_append(char** v, __int64* vtop, __int64* vcap, __int64 data) {
+void simp_char_vector_append(char** v, __int64* vtop, __int64* vcap, char data) {
 
     *vtop = *vtop + 1;
 
@@ -54,7 +194,6 @@ void simp_char_vector_append(char** v, __int64* vtop, __int64* vcap, __int64 dat
     }
 
 }
-
 
 __int64* simp_vector_create(__int64 init_sz) {
 

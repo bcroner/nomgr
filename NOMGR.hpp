@@ -16,6 +16,12 @@ typedef struct Voucher_tag {
 
 } Voucher;
 
+typedef struct Voucher_System_tag {
+
+	Voucher* vouchers;
+
+} Voucher_System;
+
 typedef struct Article_V_Convention_tag {
 
 	char* source;
@@ -143,9 +149,21 @@ typedef struct SATSolver_tag {
 
 } SATSolver;
 
+Voucher* simp_voucher_vector_create(__int64 init_sz);
+Voucher* simp_voucher_vector_read(Voucher** v, __int64 vtop, __int64 vcap, __int64 loc);
+void simp_voucher_vector_append(Voucher*** v, __int64* vtop, __int64* vcap, Voucher* data);
+Bill* simp_bill_vector_create(__int64 init_sz);
+Bill* simp_bill_vector_read(Bill** v, __int64 vtop, __int64 vcap, __int64 loc);
+void simp_bill_vector_append(Bill*** v, __int64* vtop, __int64* vcap, Bill* data);
+Law* simp_law_vector_create(__int64 init_sz);
+Law* simp_law_vector_read(Law** v, __int64 vtop, __int64 vcap, __int64 loc);
+void simp_law_vector_append(Law*** v, __int64* vtop, __int64* vcap, Law* data);
+Gold_Deposit* simp_gold_deposit_vector_create(__int64 init_sz);
+Gold_Deposit* simp_gold_deposit_vector_read(Gold_Deposit** v, __int64 vtop, __int64 vcap, __int64 loc);
+void simp_gold_deposit_vector_append(Gold_Deposit*** v, __int64* vtop, __int64* vcap, Gold_Deposit* data);
 char* simp_char_vector_create(__int64 init_sz);
 char simp_char_vector_read(char* v, __int64 vtop, __int64 vcap, __int64 loc);
-void simp_char_vector_append(char** v, __int64* vtop, __int64* vcap, __int64 data);
+void simp_char_vector_append(char** v, __int64* vtop, __int64* vcap, char data);
 __int64* simp_vector_create(__int64 init_sz);
 __int64 simp_vector_read(__int64* v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_vector_append(__int64** v, __int64* vtop, __int64* vcap, __int64 data);
