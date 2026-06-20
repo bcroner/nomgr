@@ -20,6 +20,41 @@
 
 using namespace std;
 
+Article_V_Option* simp_article_v_option_vector_create(__int64 init_sz) {
+
+    Article_V_Option* ret = new Article_V_Option[init_sz];
+    return ret;
+
+}
+
+Article_V_Option* simp_article_v_option_vector_read(Article_V_Option** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_article_v_option_vector_append(Article_V_Option*** v, __int64* vtop, __int64* vcap, Article_V_Option* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Article_V_Option** newv = new Article_V_Option * [*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+
+}
+
 Voucher* simp_voucher_vector_create(__int64 init_sz) {
 
     Voucher* ret = new Voucher[init_sz];

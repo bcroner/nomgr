@@ -39,19 +39,29 @@ typedef struct Barter_System_tag {
 
 };
 
-typedef struct Article_V_Convention_tag {
+typedef struct Article_V_Option_tag {
 
 	char* source;
 	char* title;
 	char* description;
 	char* media_url;
+	__int64 votes_for;
+	__int64 votes_against;
+	__int64 gold_microgram_value_for;
+	__int64 gold_microgram_value_against;
+
+} Article_V_Option ;
+
+typedef struct Article_V_Convention_tag {
+
+	Article_V_Option* options;
 	__int64 interval;
 	__int64 votes_for;
 	__int64 votes_against;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
-} Article_V_Convention ;
+} Article_V_Convention_System;
 
 typedef struct Rollback_Article_V_Convention_tag {
 
@@ -166,6 +176,9 @@ typedef struct SATSolver_tag {
 
 } SATSolver;
 
+Article_V_Option* simp_article_v_option_vector_create(__int64 init_sz);
+Article_V_Option* simp_article_v_option_vector_read(Article_V_Option** v, __int64 vtop, __int64 vcap, __int64 loc);
+void simp_article_v_option_vector_append(Article_V_Option*** v, __int64* vtop, __int64* vcap, Article_V_Option* data);
 Voucher* simp_voucher_vector_create(__int64 init_sz);
 Voucher* simp_voucher_vector_read(Voucher** v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_voucher_vector_append(Voucher*** v, __int64* vtop, __int64* vcap, Voucher* data);
