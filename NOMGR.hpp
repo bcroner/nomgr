@@ -172,6 +172,7 @@ typedef struct SATSolver_tag {
 
 	__int64* lst_l_parm;
 	__int64* lst_r_parm;
+
 	bool* is_f;
 	bool* is_t;
 
