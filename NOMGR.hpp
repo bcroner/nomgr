@@ -207,8 +207,8 @@ bool* SATSolver_create_boundary(bool begin, __int64 chop, __int64 offs, __int64 
 void SATSolver_create(SATSolver* s, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues);
 void SATSolver_destroy(SATSolver* s);
 bool SATSolver_isSat(SATSolver* s, bool* sln);
-void thread_2SAT(bool* arr, bool* is_sat, __int64** lst, __int64 k_parm, __int64 n_parm, __int64 chops, __int64 chop, __int64 leading_trues);
-bool SATSolver_threads(__int64** lst, __int64 k_parm, __int64 n_parm, bool* arr, __int64 leading_trues);
+void thread_2SAT(bool* arr, bool* is_sat, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues);
+bool SATSolver_threads(bool* arr, bool* is_sat, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues);
 
 
 
