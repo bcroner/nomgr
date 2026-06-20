@@ -85,10 +85,12 @@ typedef struct Rollback_Article_V_Convention_tag {
 
 typedef struct Bill_tag {
 
+	__int64 id;
 	char* title;
 	char* description;
 	char* media_url;
 	__int64 classification;
+	__int64 repeal_id;
 	__int64 interval;
 	__int64 votes_for;
 	__int64 votes_against;
@@ -111,10 +113,12 @@ typedef struct Legislative_Session_tag {
 
 typedef struct Law_tag {
 
+	__int64 id;
 	char* title;
 	char* description;
 	char* media_url;
 	__int64 classification;
+	__int64 repeal_id;
 	__int64 valid_start;
 	__int64 valid_end;
 
