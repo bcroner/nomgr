@@ -51,8 +51,10 @@ typedef struct Article_V_Option_tag {
 	char* title;
 	char* description;
 	char* media_url;
-	__int64 votes_for;
-	__int64 votes_against;
+	__int64* votes_for;
+	__int64* votes_against;
+	Voucher* vouchers_for;
+	Voucher* vouchers_against;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
@@ -62,8 +64,10 @@ typedef struct Article_V_Convention_tag {
 
 	Article_V_Option* options;
 	__int64 interval;
-	__int64 votes_for;
-	__int64 votes_against;
+	__int64* votes_for;
+	__int64* votes_against;
+	Voucher* vouchers_for;
+	Voucher* vouchers_against;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
@@ -76,8 +80,10 @@ typedef struct Rollback_Article_V_Convention_tag {
 	char* description;
 	char* media_url;
 	__int64 interval;
-	__int64 votes_for;
-	__int64 votes_against;
+	__int64* votes_for;
+	__int64* votes_against;
+	Voucher* vouchers_for;
+	Voucher* vouchers_against;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
@@ -92,8 +98,8 @@ typedef struct Bill_tag {
 	__int64 classification;
 	__int64 repeal_id;
 	__int64 interval;
-	__int64 votes_for;
-	__int64 votes_against;
+	__int64* votes_for;
+	__int64* votes_against;
 	Voucher* vouchers_for;
 	Voucher* vouchers_against;
 	__int64 gold_microgram_value_for;
