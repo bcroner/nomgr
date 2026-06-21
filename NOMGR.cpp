@@ -605,7 +605,7 @@ bool SATSolver_isSat(SATSolver* s, bool* sln) {
 
         }
 
-        if (ix >= n)
+        if (ix >= s->n_parm - s->leading_trues - s->chops)
             break;
 
     }

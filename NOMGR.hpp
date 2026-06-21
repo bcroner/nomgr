@@ -12,24 +12,52 @@ typedef struct Voucher_tag {
 	char* media_url;
 	__int64 valid_start;
 	__int64 valid_end;
+	__int64 subscription_interval;
+	__int64 interval_type;
+	__int64 intervals;
 	__int64 gold_microgram_value;
+
+	__int64* title_vtop;
+	__int64* title_vcap;
+	__int64* description_vtop;
+	__int64* description_vcap;
+	__int64* media_url_vtop;
+	__int64* media_url_vcap;
 
 } Voucher;
 
 typedef struct Voucher_System_tag {
 
 	Voucher* vouchers;
+	__int64* voucher_counts;
+
+	__int64* vouchers_vtop;
+	__int64* vouchers_vcap;
+	__int64* voucher_counts_vtop;
+	__int64* voucher_counts_vcap;
 
 } Voucher_System;
 
 typedef struct Offer_tag {
 
 	Voucher* give;
+	__int64* give_voucher_counts;
 	Voucher* receive;
+	__int64* receive_voucher_counts;
 	__int64 give_gold_microgram_value;
 	__int64 receive_gold_microgram_value;
 	__int64 valid_start;
 	__int64 valid_end;
+	__int64 subscription_interval;
+	__int64 interval_type;
+	__int64 intervals;
+
+	__int64* give_vtop;
+	__int64* give_vcap;
+	__int64* give_voucher_counts_vtop;
+	__int64* give_voucher_counts_vcap;
+	__int64* receive_voucher_counts_vtop;
+	__int64* receive_voucher_counts_vcap;
 
 } Offer;
 
@@ -37,11 +65,17 @@ typedef struct Barter_System_tag {
 
 	Offer* offers;
 
+	__int64* offers_vtop;
+	__int64* offers_vcap;
+
 };
 
 typedef struct Offer_Triggered_Trade_Queue_tag {
 
 	__int64* offers;
+
+	__int64* offers_vtop;
+	__int64* offers_vcap;
 	
 } Offer_Triggered_Trade_Queue;
 
@@ -54,9 +88,32 @@ typedef struct Article_V_Option_tag {
 	__int64* votes_for;
 	__int64* votes_against;
 	Voucher* vouchers_for;
+	__int64* for_voucher_counts;
 	Voucher* vouchers_against;
+	__int64* against_voucher_counts;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
+
+	__int64* source_vtop;
+	__int64* source_vcap;
+	__int64* title_vtop;
+	__int64* title_vcap;
+	__int64* description_vtop;
+	__int64* description_vcap;
+	__int64* media_url_vtop;
+	__int64* media_url_vcap;
+	__int64* votes_for_vtop;
+	__int64* votes_for_vcap;
+	__int64* votes_against_vtop;
+	__int64* votes_against_vcap;
+	__int64* vouchers_for_vtop;
+	__int64* vouchers_for_vcap;
+	__int64* for_voucher_counts_vtop;
+	__int64* for_voucher_counts_vcap;
+	__int64* vouchers_against_vtop;
+	__int64* vouchers_against_vcap;
+	__int64* against_voucher_counts_vtop;
+	__int64* against_voucher_counts_vcap;
 
 } Article_V_Option ;
 
@@ -67,9 +124,26 @@ typedef struct Article_V_Convention_tag {
 	__int64* votes_for;
 	__int64* votes_against;
 	Voucher* vouchers_for;
+	__int64* for_voucher_counts;
 	Voucher* vouchers_against;
+	__int64* against_voucher_counts;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
+
+	__int64* options_vtop;
+	__int64* options_vcap;
+	__int64* votes_for_vtop;
+	__int64* votes_for_vcap;
+	__int64* votes_against_vtop;
+	__int64* votes_against_vcap;
+	__int64* vouchers_for_vtop;
+	__int64* vouchers_for_vcap;
+	__int64* for_voucher_counts_vtop;
+	__int64* for_voucher_counts_vcap;
+	__int64* vouchers_against_vtop;
+	__int64* vouchers_against_vcap;
+	__int64* against_voucher_counts_vtop;
+	__int64* against_voucher_counts_vcap;
 
 } Article_V_Convention_System;
 
@@ -83,9 +157,32 @@ typedef struct Rollback_Article_V_Convention_tag {
 	__int64* votes_for;
 	__int64* votes_against;
 	Voucher* vouchers_for;
+	__int64* for_voucher_counts;
 	Voucher* vouchers_against;
+	__int64* aagainst_voucher_counts;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
+
+	__int64* source_vtop;
+	__int64* source_vcap;
+	__int64* title_vtop;
+	__int64* title_vcap;
+	__int64* description_vtop;
+	__int64* description_vcap;
+	__int64* media_url_vtop;
+	__int64* media_url_vcap;
+	__int64* votes_for_vtop;
+	__int64* votes_for_vcap;
+	__int64* votes_against_vtop;
+	__int64* votes_against_vcap;
+	__int64* vouchers_for_vtop;
+	__int64* vouchers_for_vcap;
+	__int64* for_voucher_counts_vtop;
+	__int64* for_voucher_counts_vcap;
+	__int64* vouchers_against_vtop;
+	__int64* vouchers_against_vcap;
+	__int64* aagainst_voucher_counts_vtop;
+	__int64* aagainst_voucher_counts_vcap;
 
 } Rollback_Article_V_Convention;
 
@@ -101,9 +198,30 @@ typedef struct Bill_tag {
 	__int64* votes_for;
 	__int64* votes_against;
 	Voucher* vouchers_for;
+	__int64* for_voucher_counts;
 	Voucher* vouchers_against;
+	__int64* against_voucher_counts;
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
+
+	__int64* title_vtop;
+	__int64* title_vcap;
+	__int64* description_vtop;
+	__int64* description_vcap;
+	__int64* media_url_vtop;
+	__int64* media_url_vcap;
+	__int64* votes_for_vtop;
+	__int64* votes_for_vcap;
+	__int64* votes_against_vtop;
+	__int64* votes_against_vcap;
+	__int64* vouchers_for_vtop;
+	__int64* vouchers_for_vcap;
+	__int64* for_voucher_counts_vtop;
+	__int64* for_voucher_counts_vcap;
+	__int64* vouchers_against_vtop;
+	__int64* vouchers_against_vcap;
+	__int64* against_voucher_counts_vtop;
+	__int64* against_voucher_counts_vcap;
 
 } Bill ;
 
@@ -114,6 +232,15 @@ typedef struct Legislative_Session_tag {
 	char* media_url;
 	__int64 interval;
 	Bill* bill;
+
+	__int64* title_vtop;
+	__int64* title_vcap;
+	__int64* description_vtop;
+	__int64* description_vcap;
+	__int64* media_url_vtop;
+	__int64* media_url_vcap;
+	__int64* bill_vtop;
+	__int64* bill_vcap;
 
 } Legislative_Session;
 
@@ -128,18 +255,28 @@ typedef struct Law_tag {
 	__int64 valid_start;
 	__int64 valid_end;
 
+	__int64* title_vtop;
+	__int64* title_vcap;
+	__int64* description_vtop;
+	__int64* description_vcap;
+	__int64* media_url_vtop;
+	__int64* media_url_vcap;
+
 } Law;
 
 typedef struct Code_tag {
 
 	Law* laws;
 
+	__int64* laws_vtop;
+	__int64* laws_vcap;
+
 } Code;
 
 typedef struct Legal_System_tag {
 
-	Code civil_code;
-	Code penal_code;
+	Code* civil_code;
+	Code* penal_code;
 
 } Legal_System;
 
@@ -154,6 +291,12 @@ typedef struct Gold_Deposit_tag {
 typedef struct Vault_tag {
 
 	Gold_Deposit* gold_deposits;
+	__int64* gold_deposits_counts;
+
+	__int64* gold_deposits_vtop;
+	__int64* gold_deposits_vcap;
+	__int64* gold_deposits_counts_vtop;
+	__int64* gold_deposits_counts_vcap;
 
 } Vault;
 
@@ -181,6 +324,15 @@ typedef struct SATSolver_tag {
 
 	bool* is_f;
 	bool* is_t;
+
+	__int64* lst_l_parm_vtop;
+	__int64* lst_l_parm_vcap;
+	__int64* lst_r_parm_vtop;
+	__int64* lst_r_parm_vcap;
+	__int64* is_f_vtop;
+	__int64* is_f_vcap;
+	__int64* is_t_vtop;
+	__int64* is_t_vcap;
 
 } SATSolver;
 
