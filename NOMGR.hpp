@@ -153,7 +153,7 @@ typedef struct Article_V_Convention_tag {
 	__int64* against_voucher_counts_vtop;
 	__int64* against_voucher_counts_vcap;
 
-} Article_V_Convention_System;
+} Article_V_Convention;
 
 typedef struct Rollback_Article_V_Convention_tag {
 
