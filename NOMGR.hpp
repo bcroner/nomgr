@@ -300,6 +300,55 @@ typedef struct Vault_tag {
 
 } Vault;
 
+typedef struct Participant_tag {
+
+	__int64 id;
+
+	__int64* bind_0;
+	__int64* bind_1;
+	__int64* exclude_0;
+	__int64* exclude_1;
+	__int64* require;
+	__int64* ban;
+
+	__int64* bind_0_vtop;
+	__int64* bind_0_vcap;
+	__int64* bind_1_vtop;
+	__int64* bind_1_vcap;
+	__int64* exclude_0_vtop;
+	__int64* exclude_0_vcap;
+	__int64* exclude_1_vtop;
+	__int64* exclude_1_vcap;
+	__int64* require_vtop;
+	__int64* require_vcap;
+	__int64* ban_vtop;
+	__int64* ban_vcap;
+
+} Participant;
+
+typedef struct Market_tag {
+
+	Participant* participants;
+
+	__int64* participants_vtop;
+	__int64* participants_vcap;
+
+} Market;
+
+typedef struct Trade_Check_tag {
+
+	Market* market;
+
+	__int64* lst_l;
+	__int64* lst_r;
+
+	__int64* lst_l_vtop;
+	__int64* lst_l_vcap;
+	__int64* lst_r_vtop;
+	__int64* lst_r_vcap;
+
+} Trade_Check;
+
 typedef struct Simp_Queue_tag {
 
 	__int64 data;
@@ -314,6 +363,7 @@ typedef struct SATSolver_tag {
 	__int64 k_parm;
 
 	__int64 chops;
+	__int64 chop;
 
 	__int64 leading_trues;
 
@@ -354,6 +404,9 @@ void simp_law_vector_append(Law*** v, __int64* vtop, __int64* vcap, Law* data);
 Gold_Deposit* simp_gold_deposit_vector_create(__int64 init_sz);
 Gold_Deposit* simp_gold_deposit_vector_read(Gold_Deposit** v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_gold_deposit_vector_append(Gold_Deposit*** v, __int64* vtop, __int64* vcap, Gold_Deposit* data);
+Participant** simp_participant_vector_create(__int64 init_sz);
+Participant* simp_participant_vector_read(Participant** v, __int64 vtop, __int64 vcap, __int64 loc);
+void simp_participant_vector_append(Participant** v, __int64* vtop, __int64* vcap, Participant* data);
 char* simp_char_vector_create(__int64 init_sz);
 char simp_char_vector_read(char* v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_char_vector_append(char** v, __int64* vtop, __int64* vcap, char data);
@@ -362,8 +415,19 @@ __int64 simp_vector_read(__int64* v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_vector_append(__int64** v, __int64* vtop, __int64* vcap, __int64 data);
 void simp_queue_enqueue(Simp_Queue* queue, Simp_Queue* parm);
 Simp_Queue* simp_queue_dequeue(Simp_Queue* queue);
+void create_bind(Market* market, __int64 participant_id, __int64 itm_0, __int64 itm_1);
+void create_exclude(Market* market, __int64 participant_id, __int64 itm_0, __int64 itm_1);
+void create_require(Market* market, __int64 participant_id, __int64 itm);
+void create_ban(Market* market, __int64 participant_id, __int64 itm);
+void remove_bind(Market* market, __int64 participant_id, __int64 itm_0, __int64 itm_1);
+void remove_exclude(Market* market, __int64 participant_id, __int64 itm_0, __int64 itm_1);
+void remove_require(Market* market, __int64 participant_id, __int64 itm);
+void remove_ban(Market* market, __int64 participant_id, __int64 itm);
+Market* create_market(Participant** participants);
+Trade_Check* create_trade_check(Market* market);
+bool check_trade(SATSolver* s, Trade_Check* trade_check);
 bool* SATSolver_create_boundary(bool begin, __int64 chop, __int64 offs, __int64 n, __int64 leading_trues);
-void SATSolver_create(SATSolver* s, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues);
+void SATSolver_create(SATSolver*** s, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm);
 void SATSolver_destroy(SATSolver* s);
 bool SATSolver_isSat(SATSolver* s, bool* sln);
 void thread_2SAT(bool* arr, bool* is_sat, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues);
