@@ -76,7 +76,7 @@ typedef struct Barter_System_tag {
 	__int64* offers_vtop;
 	__int64* offers_vcap;
 
-};
+} Barter_System;
 
 typedef struct Offer_Triggered_Trade_Queue_tag {
 
