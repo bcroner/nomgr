@@ -11,12 +11,13 @@
 #include <future>
 #include <list>
 #include <random>
-#include "thread-pool/thread_pool.hpp"              // https://github.com/mtrebi/thread-pool
-#include "thread-pool/thread_pool_callable.hpp"     // https://github.com/mtrebi/thread-pool
 #include <stdio.h>
 #include <thread>
 #include <condition_variable>
 #include <mutex>
+#include <atomic>
+#include <vector>
+#include <functional>
 
 Article_V_Option* simp_article_v_option_vector_create(__int64 init_sz) {
 
@@ -333,28 +334,150 @@ void simp_vector_append(__int64** v, __int64* vtop, __int64* vcap, __int64 data)
 
 }
 
-std::mutex qmtx;
+std::atomic_flag lock_flag = ATOMIC_FLAG_INIT;
 
-void simp_queue_enqueue(Simp_Queue* queue, Simp_Queue* parm) {
 
-    Simp_Queue* temp = queue->next;
-    queue->next = parm;
-    parm->next = temp;
+void enqueue(Simp_Queue* queue, Simp_Queue* parm) {
+	Simp_Queue* temp = queue->next;
+	queue->next = parm;
+	parm->next = temp;
+}
+
+void simp_queue_enqueue(Simp_Queue* queue, Simp_Queue* parm, std::vector<std::thread> threads) {
+
+    // 1. Initialize variables & atomic flag for single thread restriction
+    std::atomic_flag single_thread_lock = ATOMIC_FLAG_INIT;
+    int data_to_compute = 100;
+
+    // Local variable of a pointer to a struct
+    RecursiveStruct* local_ptr = new RecursiveStruct{ 5, nullptr };
+
+    // 2. Define the work function 
+    // Capturing local_ptr (by copy or reference, here 'this' or '=' is used per spec)
+    auto work_function = [local_ptr](int multiplier) -> RecursiveStruct* {
+        std::cout << "Thread executing work function with local_ptr->value: "
+            << local_ptr->value << "\n";
+
+        // Return a pointer to a new struct based on arguments
+        return new RecursiveStruct{ data_to_compute * multiplier, local_ptr };
+        };
+
+    // 3. Setup a vector of threads
+    const int NUM_THREADS = 4;
+    std::vector<std::thread> threads;
+    std::vector<RecursiveStruct*> results(NUM_THREADS, nullptr);
+
+    // 4. Launch threads
+    for (int i = 0; i < NUM_THREADS; ++i) {
+        threads.emplace_back([&single_thread_lock, &results, &work_function, i]() {
+
+            // Only allow a single thread to operate using an unconditional atomic test-and-set
+            if (!single_thread_lock.test_and_set(std::memory_order_acquire)) {
+
+                // This block is only executed by the FIRST thread that succeeds in setting the lock
+                results[i] = work_function(i + 1);
+
+                // Release the lock when done
+                single_thread_lock.clear(std::memory_order_release);
+            }
+            });
+    }
+
+    // 5. Join all threads
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    // 6. Output the results (demonstrating only one thread executed the function)
+    for (int i = 0; i < NUM_THREADS; ++i) {
+        if (results[i] != nullptr) {
+            std::cout << "Result from thread " << i << ": "
+                << results[i]->value << "\n";
+        }
+        else {
+            std::cout << "Thread " << i << " was locked out or yielded no result.\n";
+        }
+    }
+
+    // Clean up memory
+    delete local_ptr;
+    for (auto res : results) {
+        delete res;
+    }
 
 }
 
-Simp_Queue* simp_queue_dequeue(Simp_Queue* queue) {
-
-    Simp_Queue* mover = queue;
-    if (mover->next == 0)
-        return 0;
-    while (mover->next->next != 0)
-        mover = mover->next;
-
-    Simp_Queue* ret = mover->next;
-    mover->next = 0;
-
+Simp_Queue* dequeue(Simp_Queue* queue) {
+    if (queue->next == nullptr)
+        return nullptr;
+    Simp_Queue* ret = queue->next;
+    queue->next = ret->next;
+    ret->next = nullptr;
     return ret;
+};
+
+Simp_Queue* simp_queue_dequeue(Simp_Queue* queu, std::vector<std::thread> threads) {
+
+    // 1. Initialize variables & atomic flag for single thread restriction
+    std::atomic_flag single_thread_lock = ATOMIC_FLAG_INIT;
+    int data_to_compute = 100;
+
+    // Local variable of a pointer to a struct
+    RecursiveStruct* local_ptr = new RecursiveStruct{ 5, nullptr };
+
+    // 2. Define the work function 
+    // Capturing local_ptr (by copy or reference, here 'this' or '=' is used per spec)
+    auto work_function = [local_ptr](int multiplier) -> RecursiveStruct* {
+        std::cout << "Thread executing work function with local_ptr->value: "
+            << local_ptr->value << "\n";
+
+        // Return a pointer to a new struct based on arguments
+        return new RecursiveStruct{ data_to_compute * multiplier, local_ptr };
+        };
+
+    // 3. Setup a vector of threads
+    const int NUM_THREADS = 4;
+    std::vector<std::thread> threads;
+    std::vector<RecursiveStruct*> results(NUM_THREADS, nullptr);
+
+    // 4. Launch threads
+    for (int i = 0; i < NUM_THREADS; ++i) {
+        threads.emplace_back([&single_thread_lock, &results, &work_function, i]() {
+
+            // Only allow a single thread to operate using an unconditional atomic test-and-set
+            if (!single_thread_lock.test_and_set(std::memory_order_acquire)) {
+
+                // This block is only executed by the FIRST thread that succeeds in setting the lock
+                results[i] = work_function(i + 1);
+
+                // Release the lock when done
+                single_thread_lock.clear(std::memory_order_release);
+            }
+            });
+    }
+
+    // 5. Join all threads
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    // 6. Output the results (demonstrating only one thread executed the function)
+    for (int i = 0; i < NUM_THREADS; ++i) {
+        if (results[i] != nullptr) {
+            std::cout << "Result from thread " << i << ": "
+                << results[i]->value << "\n";
+        }
+        else {
+            std::cout << "Thread " << i << " was locked out or yielded no result.\n";
+        }
+    }
+
+    // Clean up memory
+    delete local_ptr;
+    for (auto res : results) {
+        delete res;
+    }
+	
 }
 
 void create_require_participant(Market* market, __int64 participant_id, __int64 itm) {
