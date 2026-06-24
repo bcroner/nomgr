@@ -551,21 +551,21 @@ Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64
     offer->logic_l_vtop = -1;
     offer->logic_r_vcap = 16;
 
-	for (__int64 i = 0; i < give_vtop+1; i++) { {
+	for (__int64 i = 0; i <= give_vtop+1; i++) { {
             
 		offer->give->id = give[i].id;
 
-		for (__int64 j = 0; j < give[i].title_vcap+1; j++)
+		for (__int64 j = 0; j <= give[i].title_vtop+1; j++)
 			offer->give->title[j] = give[i].title[j];
 		offer->give->title_vtop = give[i].title_vtop;
 		offer->give->title_vcap = give[i].title_vcap;
 
-        for (__int64 j = 0; j < give[i].description_vcap + 1; j++)
+        for (__int64 j = 0; j <= give[i].description_vtop + 1; j++)
             offer->give->description[j] = give[i].description[j];
         offer->give->description_vtop = give[i].description_vtop;
         offer->give->description_vcap = give[i].description_vcap;
 
-        for (__int64 j = 0; j < give[i].media_url_vcap + 1; j++)
+        for (__int64 j = 0; j <= give[i].media_url_vtop + 1; j++)
             offer->give->media_url[j] = give[i].media_url[j];
         offer->give->media_url_vtop = give[i].media_url_vtop;
         offer->give->media_url_vcap = give[i].media_url_vcap;
@@ -578,25 +578,25 @@ Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64
 
         offer->give_gold_microgram_value = 0;
 
-		for (__int64 j = 0; j < give_voucher_counts_vtop + 1; j++)
+		for (__int64 j = 0; j <= give_voucher_counts_vtop + 1; j++)
             offer->give_gold_microgram_value += give->gold_microgram_value;
 	}
 
-    for (__int64 i = 0; i < receive_vtop + 1; i++) {
+    for (__int64 i = 0; i <= receive_vtop + 1; i++) {
 
         offer->receive->id = receive[i].id;
 
-        for (__int64 j = 0; j < receive[i].title_vcap + 1; j++)
+        for (__int64 j = 0; j <= receive[i].title_vtop + 1; j++)
             offer->receive->title[j] = receive[i].title[j];
         offer->receive->title_vtop = receive[i].title_vtop;
         offer->receive->title_vcap = receive[i].title_vcap;
 
-        for (__int64 j = 0; j < receive[i].description_vcap + 1; j++)
+        for (__int64 j = 0; j <= receive[i].description_vtop + 1; j++)
             offer->receive->description[j] = receive[i].description[j];
         offer->receive->description_vtop = receive[i].description_vtop;
         offer->receive->description_vcap = receive[i].description_vcap;
 
-        for (__int64 j = 0; j < receive[i].media_url_vcap + 1; j++)
+        for (__int64 j = 0; j <= receive[i].media_url_vtop + 1; j++)
             offer->receive->media_url[j] = receive[i].media_url[j];
         offer->receive->media_url_vtop = receive[i].media_url_vtop;
         offer->receive->media_url_vcap = receive[i].media_url_vcap;
@@ -609,19 +609,19 @@ Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64
 
         offer->receive_gold_microgram_value = 0;
 
-        for (__int64 j = 0; j < receive_voucher_counts_vtop + 1; j++)
+        for (__int64 j = 0; j <= receive_voucher_counts_vtop + 1; j++)
             offer->receive_gold_microgram_value += receive->gold_microgram_value;
     }
 
     offer->valid_start = give[0].valid_start;
 
-	for (__int64 j = 1; j < give_vtop + 1; j++)
+	for (__int64 j = 1; j <= give_vtop + 1; j++)
 		if (give[j].valid_start < offer->valid_start)
 			offer->valid_start = give[j].valid_start;
 
     offer->valid_end = give[0].valid_end;
 
-    for (__int64 j = 1; j < give_vtop + 1; j++)
+    for (__int64 j = 1; j <= give_vtop + 1; j++)
         if (give[j].valid_end < offer->valid_end)
             offer->valid_end = give[j].valid_end;
 
@@ -630,10 +630,10 @@ Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64
     offer->interval_type = interval_type;
     offer->intervals = intervals;
 
-	for (__int64 j = 0; j < insurance_policies_accepted_vtop + 1; j++)
+	for (__int64 j = 0; j <= insurance_policies_accepted_vtop + 1; j++)
 		offer->insurance_policies_accepted[j] = insurance_policies_accepted[j];
 
-    for (__int64 j = 0; j < insurance_policies_applied_vtop + 1; j++)
+    for (__int64 j = 0; j <= insurance_policies_applied_vtop + 1; j++)
         offer->insurance_policies_applied[j] = insurance_policies_applied[j];
 
     
