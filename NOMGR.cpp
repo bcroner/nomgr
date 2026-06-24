@@ -511,14 +511,14 @@ void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
 
 }
 
-Offer* create_offer(Voucher* give, __int64* give_vtop, __int64* give_vcap, __int64* give_voucher_counts, __int64* give_voucher_counts_vtop, __int64* give_voucher_counts_vcap, Voucher* receive, __int64* receive_vtop, __int64* receive_vcap, __int64* receive_voucher_counts, __int64* receive_voucher_counts_vtop, __int64* receive_voucher_counts_vcap,
+Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
     __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
-    __int64* insurance_policies_accepted, __int64* insurance_policies_accepted_vtop, __int64* insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64* insurance_policies_applied_vtop, __int64* insurance_policies_applied_vcap,
+    __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
     __int64* exclude, __int64* exclude_vtop, __int64* exclude_vcap) {
 
     Offer* offer = new Offer();
 
-    offer->give = new Voucher[16];
+    offer->give = new Voucher[give_vtop+1];
     offer->give_voucher_counts = new __int64[16];
     offer->receive = new Voucher[16];
     offer->receive_voucher_counts[16];
@@ -534,23 +534,128 @@ Offer* create_offer(Voucher* give, __int64* give_vtop, __int64* give_vcap, __int
 	offer->logic_l = new __int64[16];
 	offer->logic_r = new __int64[16];
 
-    offer->give_vtop = new __int64[16];
-    offer->give_vcap = new __int64[16];
-    offer->give_voucher_counts_vtop = new __int64[16];
-    offer->give_voucher_counts_vcap = new __int64[16];
-    offer->receive_vtop = new __int64[16];
-    offer->receive_vcap = new __int64[16];
-    offer->receive_voucher_counts_vtop = new __int64[16];
-    offer->receive_voucher_counts_vcap = new __int64[16];
-    offer->insurance_policies_accepted_vtop = new __int64[16];
-    offer->insurance_policies_accepted_vcap = new __int64[16];
-    offer->insurance_policies_applied_vtop = new __int64[16];
-    offer->insurance_policies_applied_vcap = new __int64[16];
-    offer->logic_l_vtop = new __int64[16];
-    offer->logic_r_vcap = new __int64[16];
-    offer->logic_l_vtop = new __int64[16];
-    offer->logic_r_vcap = new __int64[16];
+    offer->give_vtop = give_vtop;
+    offer->give_vcap = give_vcap;
+    offer->give_voucher_counts_vtop = give_voucher_counts_vtop;
+    offer->give_voucher_counts_vcap = give_voucher_counts_vcap;
+    offer->receive_vtop = receive_vtop;
+    offer->receive_vcap = receive_vcap;
+    offer->receive_voucher_counts_vtop = receive_voucher_counts_vtop;
+    offer->receive_voucher_counts_vcap = receive_voucher_counts_vcap;
+    offer->insurance_policies_accepted_vtop = insurance_policies_accepted_vtop;
+    offer->insurance_policies_accepted_vcap = insurance_policies_accepted_vcap;
+    offer->insurance_policies_applied_vtop = insurance_policies_applied_vtop;
+    offer->insurance_policies_applied_vcap = insurance_policies_applied_vcap;
+    offer->logic_l_vtop = -1;
+    offer->logic_r_vcap = 16;
+    offer->logic_l_vtop = -1;
+    offer->logic_r_vcap = 16;
 
+	for (__int64 i = 0; i < give_vtop+1; i++) { {
+            
+		offer->give->id = give[i].id;
+
+		for (__int64 j = 0; j < give[i].title_vcap+1; j++)
+			offer->give->title[j] = give[i].title[j];
+		offer->give->title_vtop = give[i].title_vtop;
+		offer->give->title_vcap = give[i].title_vcap;
+
+        for (__int64 j = 0; j < give[i].description_vcap + 1; j++)
+            offer->give->description[j] = give[i].description[j];
+        offer->give->description_vtop = give[i].description_vtop;
+        offer->give->description_vcap = give[i].description_vcap;
+
+        for (__int64 j = 0; j < give[i].media_url_vcap + 1; j++)
+            offer->give->media_url[j] = give[i].media_url[j];
+        offer->give->media_url_vtop = give[i].media_url_vtop;
+        offer->give->media_url_vcap = give[i].media_url_vcap;
+
+        offer->valid_start = give[i].valid_start;
+        offer->valid_end = give[i].valid_end;
+        offer->subscription_interval = give[i].subscription_interval;
+        offer->interval_type = give[i].interval_type;
+        offer->intervals = give[i].intervals;
+
+        offer->give_gold_microgram_value = 0;
+
+		for (__int64 j = 0; j < give_voucher_counts_vtop + 1; j++)
+            offer->give_gold_microgram_value += give->gold_microgram_value;
+	}
+
+    for (__int64 i = 0; i < receive_vtop + 1; i++) {
+
+        offer->receive->id = receive[i].id;
+
+        for (__int64 j = 0; j < receive[i].title_vcap + 1; j++)
+            offer->receive->title[j] = receive[i].title[j];
+        offer->receive->title_vtop = receive[i].title_vtop;
+        offer->receive->title_vcap = receive[i].title_vcap;
+
+        for (__int64 j = 0; j < receive[i].description_vcap + 1; j++)
+            offer->receive->description[j] = receive[i].description[j];
+        offer->receive->description_vtop = receive[i].description_vtop;
+        offer->receive->description_vcap = receive[i].description_vcap;
+
+        for (__int64 j = 0; j < receive[i].media_url_vcap + 1; j++)
+            offer->receive->media_url[j] = receive[i].media_url[j];
+        offer->receive->media_url_vtop = receive[i].media_url_vtop;
+        offer->receive->media_url_vcap = receive[i].media_url_vcap;
+
+        offer->valid_start = receive[i].valid_start;
+        offer->valid_end = receive[i].valid_end;
+        offer->subscription_interval = receive[i].subscription_interval;
+        offer->interval_type = receive[i].interval_type;
+        offer->intervals = receive[i].intervals;
+
+        offer->receive_gold_microgram_value = 0;
+
+        for (__int64 j = 0; j < receive_voucher_counts_vtop + 1; j++)
+            offer->receive_gold_microgram_value += receive->gold_microgram_value;
+    }
+
+    offer->valid_start = give[0].valid_start;
+
+	for (__int64 j = 1; j < give_vtop + 1; j++)
+		if (give[j].valid_start < offer->valid_start)
+			offer->valid_start = give[j].valid_start;
+
+    offer->valid_end = give[0].valid_end;
+
+    for (__int64 j = 1; j < give_vtop + 1; j++)
+        if (give[j].valid_end < offer->valid_end)
+            offer->valid_end = give[j].valid_end;
+
+
+    offer->subscription_interval = subscription_interval;
+    offer->interval_type = interval_type;
+    offer->intervals = intervals;
+
+	for (__int64 j = 0; j < insurance_policies_accepted_vtop + 1; j++)
+		offer->insurance_policies_accepted[j] = insurance_policies_accepted[j];
+
+    for (__int64 j = 0; j < insurance_policies_applied_vtop + 1; j++)
+        offer->insurance_policies_applied[j] = insurance_policies_applied[j];
+
+    
+    offer->logic_l = new __int64[16];
+    offer->logic_r = new __int64[16];
+
+    offer->give_vtop = -1;
+    offer->give_vcap = 16;
+    offer->give_voucher_counts_vtop = -1;
+    offer->give_voucher_counts_vcap = 16;
+    offer->receive_vtop = -1;
+    offer->receive_vcap = 16;
+    offer->receive_voucher_counts_vtop = -1;
+    offer->receive_voucher_counts_vcap = 16;
+    offer->insurance_policies_accepted_vtop = -1;
+    offer->insurance_policies_accepted_vcap = 16;
+    offer->insurance_policies_applied_vtop = -1;
+    offer->insurance_policies_applied_vcap = 16;
+    offer->logic_l_vtop = -1;
+    offer->logic_r_vcap = 16;
+    offer->logic_l_vtop = -1;
+    offer->logic_r_vcap = 16;
 
 }
 

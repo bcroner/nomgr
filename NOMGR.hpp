@@ -17,12 +17,12 @@ typedef struct Voucher_tag {
 	__int64 intervals;
 	__int64 gold_microgram_value;
 
-	__int64* title_vtop;
-	__int64* title_vcap;
-	__int64* description_vtop;
-	__int64* description_vcap;
-	__int64* media_url_vtop;
-	__int64* media_url_vcap;
+	__int64 title_vtop;
+	__int64 title_vcap;
+	__int64 description_vtop;
+	__int64 description_vcap;
+	__int64 media_url_vtop;
+	__int64 media_url_vcap;
 
 } Voucher;
 
@@ -31,10 +31,10 @@ typedef struct Voucher_System_tag {
 	Voucher* vouchers;
 	__int64* voucher_counts;
 
-	__int64* vouchers_vtop;
-	__int64* vouchers_vcap;
-	__int64* voucher_counts_vtop;
-	__int64* voucher_counts_vcap;
+	__int64 vouchers_vtop;
+	__int64 vouchers_vcap;
+	__int64 voucher_counts_vtop;
+	__int64 voucher_counts_vcap;
 
 } Voucher_System;
 
@@ -56,22 +56,22 @@ typedef struct Offer_tag {
 	__int64* logic_l;
 	__int64* logic_r;
 
-	__int64* give_vtop;
-	__int64* give_vcap;
-	__int64* give_voucher_counts_vtop;
-	__int64* give_voucher_counts_vcap;
-	__int64* receive_vtop;
-	__int64* receive_vcap;
-	__int64* receive_voucher_counts_vtop;
-	__int64* receive_voucher_counts_vcap;
-	__int64* insurance_policies_accepted_vtop;
-	__int64* insurance_policies_accepted_vcap;
-	__int64* insurance_policies_applied_vtop;
-	__int64* insurance_policies_applied_vcap;
-	__int64* logic_l_vtop;
-	__int64* logic_r_vcap;
-	__int64* logic_l_vtop;
-	__int64* logic_r_vcap;
+	__int64 give_vtop;
+	__int64 give_vcap;
+	__int64 give_voucher_counts_vtop;
+	__int64 give_voucher_counts_vcap;
+	__int64 receive_vtop;
+	__int64 receive_vcap;
+	__int64 receive_voucher_counts_vtop;
+	__int64 receive_voucher_counts_vcap;
+	__int64 insurance_policies_accepted_vtop;
+	__int64 insurance_policies_accepted_vcap;
+	__int64 insurance_policies_applied_vtop;
+	__int64 insurance_policies_applied_vcap;
+	__int64 logic_l_vtop;
+	__int64 logic_r_vcap;
+	__int64 logic_l_vtop;
+	__int64 logic_r_vcap;
 
 } Offer;
 
@@ -79,8 +79,8 @@ typedef struct Barter_System_tag {
 
 	Offer* offers;
 
-	__int64* offers_vtop;
-	__int64* offers_vcap;
+	__int64 offers_vtop;
+	__int64 offers_vcap;
 
 } Barter_System;
 
@@ -88,8 +88,8 @@ typedef struct Offer_Triggered_Trade_Queue_tag {
 
 	__int64* offers;
 
-	__int64* offers_vtop;
-	__int64* offers_vcap;
+	__int64 offers_vtop;
+	__int64 offers_vcap;
 	
 } Offer_Triggered_Trade_Queue;
 
@@ -108,26 +108,26 @@ typedef struct Article_V_Option_tag {
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
-	__int64* source_vtop;
-	__int64* source_vcap;
-	__int64* title_vtop;
-	__int64* title_vcap;
-	__int64* description_vtop;
-	__int64* description_vcap;
-	__int64* media_url_vtop;
-	__int64* media_url_vcap;
-	__int64* votes_for_vtop;
-	__int64* votes_for_vcap;
-	__int64* votes_against_vtop;
-	__int64* votes_against_vcap;
-	__int64* vouchers_for_vtop;
-	__int64* vouchers_for_vcap;
-	__int64* for_voucher_counts_vtop;
-	__int64* for_voucher_counts_vcap;
-	__int64* vouchers_against_vtop;
-	__int64* vouchers_against_vcap;
-	__int64* against_voucher_counts_vtop;
-	__int64* against_voucher_counts_vcap;
+	__int64 source_vtop;
+	__int64 source_vcap;
+	__int64 title_vtop;
+	__int64 title_vcap;
+	__int64 description_vtop;
+	__int64 description_vcap;
+	__int64 media_url_vtop;
+	__int64 media_url_vcap;
+	__int64 votes_for_vtop;
+	__int64 votes_for_vcap;
+	__int64 votes_against_vtop;
+	__int64 votes_against_vcap;
+	__int64 vouchers_for_vtop;
+	__int64 vouchers_for_vcap;
+	__int64 for_voucher_counts_vtop;
+	__int64 for_voucher_counts_vcap;
+	__int64 vouchers_against_vtop;
+	__int64 vouchers_against_vcap;
+	__int64 against_voucher_counts_vtop;
+	__int64 against_voucher_counts_vcap;
 
 } Article_V_Option ;
 
@@ -144,20 +144,20 @@ typedef struct Article_V_Convention_tag {
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
-	__int64* options_vtop;
-	__int64* options_vcap;
-	__int64* votes_for_vtop;
-	__int64* votes_for_vcap;
-	__int64* votes_against_vtop;
-	__int64* votes_against_vcap;
-	__int64* vouchers_for_vtop;
-	__int64* vouchers_for_vcap;
-	__int64* for_voucher_counts_vtop;
-	__int64* for_voucher_counts_vcap;
-	__int64* vouchers_against_vtop;
-	__int64* vouchers_against_vcap;
-	__int64* against_voucher_counts_vtop;
-	__int64* against_voucher_counts_vcap;
+	__int64 options_vtop;
+	__int64 options_vcap;
+	__int64 votes_for_vtop;
+	__int64 votes_for_vcap;
+	__int64 votes_against_vtop;
+	__int64 votes_against_vcap;
+	__int64 vouchers_for_vtop;
+	__int64 vouchers_for_vcap;
+	__int64 for_voucher_counts_vtop;
+	__int64 for_voucher_counts_vcap;
+	__int64 vouchers_against_vtop;
+	__int64 vouchers_against_vcap;
+	__int64 against_voucher_counts_vtop;
+	__int64 against_voucher_counts_vcap;
 
 } Article_V_Convention;
 
@@ -177,26 +177,26 @@ typedef struct Rollback_Article_V_Convention_tag {
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
-	__int64* source_vtop;
-	__int64* source_vcap;
-	__int64* title_vtop;
-	__int64* title_vcap;
-	__int64* description_vtop;
-	__int64* description_vcap;
-	__int64* media_url_vtop;
-	__int64* media_url_vcap;
-	__int64* votes_for_vtop;
-	__int64* votes_for_vcap;
-	__int64* votes_against_vtop;
-	__int64* votes_against_vcap;
-	__int64* vouchers_for_vtop;
-	__int64* vouchers_for_vcap;
-	__int64* for_voucher_counts_vtop;
-	__int64* for_voucher_counts_vcap;
-	__int64* vouchers_against_vtop;
-	__int64* vouchers_against_vcap;
-	__int64* aagainst_voucher_counts_vtop;
-	__int64* aagainst_voucher_counts_vcap;
+	__int64 source_vtop;
+	__int64 source_vcap;
+	__int64 title_vtop;
+	__int64 title_vcap;
+	__int64 description_vtop;
+	__int64 description_vcap;
+	__int64 media_url_vtop;
+	__int64 media_url_vcap;
+	__int64 votes_for_vtop;
+	__int64 votes_for_vcap;
+	__int64 votes_against_vtop;
+	__int64 votes_against_vcap;
+	__int64 vouchers_for_vtop;
+	__int64 vouchers_for_vcap;
+	__int64 for_voucher_counts_vtop;
+	__int64 for_voucher_counts_vcap;
+	__int64 vouchers_against_vtop;
+	__int64 vouchers_against_vcap;
+	__int64 aagainst_voucher_counts_vtop;
+	__int64 aagainst_voucher_counts_vcap;
 
 } Rollback_Article_V_Convention;
 
@@ -218,24 +218,24 @@ typedef struct Bill_tag {
 	__int64 gold_microgram_value_for;
 	__int64 gold_microgram_value_against;
 
-	__int64* title_vtop;
-	__int64* title_vcap;
-	__int64* description_vtop;
-	__int64* description_vcap;
-	__int64* media_url_vtop;
-	__int64* media_url_vcap;
-	__int64* votes_for_vtop;
-	__int64* votes_for_vcap;
-	__int64* votes_against_vtop;
-	__int64* votes_against_vcap;
-	__int64* vouchers_for_vtop;
-	__int64* vouchers_for_vcap;
-	__int64* for_voucher_counts_vtop;
-	__int64* for_voucher_counts_vcap;
-	__int64* vouchers_against_vtop;
-	__int64* vouchers_against_vcap;
-	__int64* against_voucher_counts_vtop;
-	__int64* against_voucher_counts_vcap;
+	__int64 title_vtop;
+	__int64 title_vcap;
+	__int64 description_vtop;
+	__int64 description_vcap;
+	__int64 media_url_vtop;
+	__int64 media_url_vcap;
+	__int64 votes_for_vtop;
+	__int64 votes_for_vcap;
+	__int64 votes_against_vtop;
+	__int64 votes_against_vcap;
+	__int64 vouchers_for_vtop;
+	__int64 vouchers_for_vcap;
+	__int64 for_voucher_counts_vtop;
+	__int64 for_voucher_counts_vcap;
+	__int64 vouchers_against_vtop;
+	__int64 vouchers_against_vcap;
+	__int64 against_voucher_counts_vtop;
+	__int64 against_voucher_counts_vcap;
 
 } Bill ;
 
@@ -247,14 +247,14 @@ typedef struct Legislative_Session_tag {
 	__int64 interval;
 	Bill* bill;
 
-	__int64* title_vtop;
-	__int64* title_vcap;
-	__int64* description_vtop;
-	__int64* description_vcap;
-	__int64* media_url_vtop;
-	__int64* media_url_vcap;
-	__int64* bill_vtop;
-	__int64* bill_vcap;
+	__int64 title_vtop;
+	__int64 title_vcap;
+	__int64 description_vtop;
+	__int64 description_vcap;
+	__int64 media_url_vtop;
+	__int64 media_url_vcap;
+	__int64 bill_vtop;
+	__int64 bill_vcap;
 
 } Legislative_Session;
 
@@ -269,12 +269,12 @@ typedef struct Law_tag {
 	__int64 valid_start;
 	__int64 valid_end;
 
-	__int64* title_vtop;
-	__int64* title_vcap;
-	__int64* description_vtop;
-	__int64* description_vcap;
-	__int64* media_url_vtop;
-	__int64* media_url_vcap;
+	__int64 title_vtop;
+	__int64 title_vcap;
+	__int64 description_vtop;
+	__int64 description_vcap;
+	__int64 media_url_vtop;
+	__int64 media_url_vcap;
 
 } Law;
 
@@ -428,9 +428,9 @@ void remove_require_participant(Market* market, __int64 participant_id, __int64 
 void remove_require_offer(Market* market, __int64 offer_id, __int64 itm);
 void remove_ban_participant(Market* market, __int64 participant_id, __int64 itm);
 void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm);
-Offer* create_offer(Voucher* give, __int64* give_vtop, __int64* give_vcap, __int64* give_voucher_counts, __int64* give_voucher_counts_vtop, __int64* give_voucher_counts_vcap, Voucher* receive, __int64* receive_vtop, __int64* receive_vcap, __int64* receive_voucher_counts, __int64* receive_voucher_counts_vtop, __int64* receive_voucher_counts_vcap,
+Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
 	__int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
-	__int64* insurance_policies_accepted, __int64* insurance_policies_accepted_vtop, __int64* insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64* insurance_policies_applied_vtop, __int64* insurance_policies_applied_vcap,
+	__int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
 	__int64* exclude, __int64* exclude_vtop, __int64* exclude_vcap);
 Market* create_market(Participant** participants);
 Trade_Check* create_trade_check(Market* market);
