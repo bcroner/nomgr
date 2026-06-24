@@ -513,7 +513,10 @@ void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
 
 Offer* create_offer(Voucher* give, __int64* give_vtop, __int64* give_vcap, __int64* give_voucher_counts, __int64* give_voucher_counts_vtop, __int64* give_voucher_counts_vcap, Voucher* receive, __int64* receive_vtop, __int64* receive_vcap, __int64* receive_voucher_counts, __int64* receive_voucher_counts_vtop, __int64* receive_voucher_counts_vcap,
     __int64 give_gold_microgram_value, __int64 receive_gold_microgram_value, __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
-    __int64* insurance_policies_accepted, __int64* insurance_policies_accepted_vtop, __int64* insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64* insurance_policies_applied_vtop, __int64* insurance_policies_applied_vcap) {
+    __int64* insurance_policies_accepted, __int64* insurance_policies_accepted_vtop, __int64* insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64* insurance_policies_applied_vtop, __int64* insurance_policies_applied_vcap,
+    __int64* exclude, __int64* exclude_vtop, __int64* exclude_vcap, __int64* logic_l, __int64* logic_r, __int64* logic_l_vtop, __int64* logic_r_vcap) {
+
+
 
 }
 
