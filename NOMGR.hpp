@@ -432,7 +432,6 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 	__int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
 	__int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
 	__int64* require, __int64 require_vtop, __int64 require_vcap, __int64* ban, __int64 ban_vtop, __int64 ban_vcap);
-Barter_System* create_barter_system(Offer** offers, __int64 offers_vtop, __int64 offers_vcap);
 Market* create_market(Barter_System** barter_system, Participant** participants);
 Trade_Check* create_trade_check(Market** market);
 bool check_trade(SATSolver* s, Trade_Check* trade_check);
