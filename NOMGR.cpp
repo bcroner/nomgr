@@ -54,14 +54,14 @@ void simp_article_v_option_vector_append(Article_V_Option*** v, __int64* vtop, _
 
 }
 
-bank* simp_bank_vector_create(__int64 init_sz) {
+Bank* simp_bank_vector_create(__int64 init_sz) {
 
-    bank* ret = new bank[init_sz];
+    Bank* ret = new Bank[init_sz];
     return ret;
 
 }
 
-bank* simp_bank_vector_read(bank** v, __int64 vtop, __int64 vcap, __int64 loc) {
+Bank* simp_bank_vector_read(Bank** v, __int64 vtop, __int64 vcap, __int64 loc) {
 
     if (loc > vtop)
         return 0;
@@ -69,14 +69,14 @@ bank* simp_bank_vector_read(bank** v, __int64 vtop, __int64 vcap, __int64 loc) {
     return v[loc];
 }
 
-void simp_bank_vector_append(bank*** v, __int64* vtop, __int64* vcap, bank* data) {
+void simp_bank_vector_append(Bank*** v, __int64* vtop, __int64* vcap, bank* data) {
 
     *vtop = *vtop + 1;
 
     if (*vtop < *vcap)
         (*v)[*vtop] = data;
     else {
-        bank** newv = new bank*[*vcap * 2];
+        Bank** newv = new Bank*[*vcap * 2];
         for (__int64 i = 0; i < *vcap * 2; i++)
             newv[i] = 0;
         for (__int64 i = 0; i < *vcap; i++)
