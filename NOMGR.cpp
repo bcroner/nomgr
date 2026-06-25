@@ -673,8 +673,8 @@ void create_ban_participant(Market* market, __int64 participant_id, __int64 itm)
 
     __int64 ban_ix = -1;
 
-    for (__int64 i = 0; i <= market->participants[participant_ix]->ban_vtop + 1; i++) {
-        if (market->participants[participant_ix]->ban[i] == itm) {
+    for (__int64 i = 0; i <= market->participants[participant_ix]->bans_vtop + 1; i++) {
+        if (market->participants[participant_ix]->bans[i] == itm) {
             ban_ix = i;
             break;
         }
@@ -683,7 +683,7 @@ void create_ban_participant(Market* market, __int64 participant_id, __int64 itm)
     if (ban_ix > -1)
         return;
 
-    simp_vector_append(&(market->participants[participant_ix]->ban), &(market->participants[participant_ix]->ban_vtop), &(market->participants[participant_ix]->ban_vcap), itm);
+    simp_vector_append(&(market->participants[participant_ix]->bans), &(market->participants[participant_ix]->bans_vtop), &(market->participants[participant_ix]->bans_vcap), itm);
 
 }
 void create_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
@@ -699,8 +699,8 @@ void create_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
 
     __int64 ban_ix = -1;
 
-    for (__int64 i = 0; i <= market->barter_system->offers[offer_ix]->ban_vtop + 1; i++) {
-        if (market->barter_system->offers[offer_ix]->ban[i] == itm) {
+    for (__int64 i = 0; i <= market->barter_system->offers[offer_ix]->bans_vtop + 1; i++) {
+        if (market->barter_system->offers[offer_ix]->bans[i] == itm) {
             ban_ix = i;
             break;
         }
@@ -709,7 +709,7 @@ void create_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
     if (ban_ix > -1)
         return;
 
-    simp_vector_append(&(market->barter_system->offers[offer_ix]->ban), &(market->barter_system->offers[offer_ix]->ban_vtop), &(market->barter_system->offers[offer_ix]->ban_vcap), itm);
+    simp_vector_append(&(market->barter_system->offers[offer_ix]->bans), &(market->barter_system->offers[offer_ix]->bans_vtop), &(market->barter_system->offers[offer_ix]->bans_vcap), itm);
 
 }
 
@@ -786,8 +786,8 @@ void remove_ban_participant(Market* market, __int64 participant_id, __int64 itm)
 
     __int64 ban_ix = -1;
 
-    for (__int64 i = 0; i <= market->participants[participant_ix]->ban_vtop + 1; i++) {
-        if (market->participants[participant_ix]->ban[i] == itm) {
+    for (__int64 i = 0; i <= market->participants[participant_ix]->bans_vtop + 1; i++) {
+        if (market->participants[participant_ix]->bans[i] == itm) {
             ban_ix = i;
             break;
         }
@@ -796,10 +796,10 @@ void remove_ban_participant(Market* market, __int64 participant_id, __int64 itm)
     if (ban_ix > -1)
         return;
 
-    for (__int64 i = ban_ix; i <= market->participants[participant_ix]->ban_vtop - 1; i++)
-        market->participants[participant_ix]->ban[i] = market->participants[participant_ix]->ban[i + 1];
+    for (__int64 i = ban_ix; i <= market->participants[participant_ix]->bans_vtop - 1; i++)
+        market->participants[participant_ix]->bans[i] = market->participants[participant_ix]->bans[i + 1];
 
-    market->participants[participant_ix]->ban_vtop--;
+    market->participants[participant_ix]->bans_vtop--;
 
 }
 
@@ -816,8 +816,8 @@ void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
 
     __int64 ban_ix = -1;
 
-    for (__int64 i = 0; i <= market->barter_system->offers[offer_ix]->ban_vtop + 1; i++) {
-        if (market->barter_system->offers[offer_ix]->ban[i] == itm) {
+    for (__int64 i = 0; i <= market->barter_system->offers[offer_ix]->bans_vtop + 1; i++) {
+        if (market->barter_system->offers[offer_ix]->bans[i] == itm) {
             ban_ix = i;
             break;
         }
@@ -826,10 +826,10 @@ void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
     if (ban_ix > -1)
         return;
 
-	for (__int64 i = ban_ix; i <= market->barter_system->offers[offer_ix]->ban_vtop - 1; i++)
-		market->barter_system->offers[offer_ix]->ban[i] = market->barter_system->offers[offer_ix]->ban[i + 1];
+	for (__int64 i = ban_ix; i <= market->barter_system->offers[offer_ix]->bans_vtop - 1; i++)
+		market->barter_system->offers[offer_ix]->bans[i] = market->barter_system->offers[offer_ix]->bans[i + 1];
 
-    market->barter_system->offers[offer_ix]->ban_vtop--;
+    market->barter_system->offers[offer_ix]->bans_vtop--;
 
 }
 
@@ -841,12 +841,12 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 
     Offer* offer = new Offer();
 
-    offer->give = new Voucher[give_vtop+1];
-    offer->give_voucher_counts = new __int64[16];
-    offer->receive = new Voucher[16];
-    offer->receive_voucher_counts[16];
-    offer->give_gold_microgram_value = 0;
-    offer->receive_gold_microgram_value = 0;
+    offer->gives = new Voucher[give_vtop+1];
+    offer->gives_voucher_counts = new __int64[16];
+    offer->receives = new Voucher[16];
+    offer->receives_voucher_counts[16];
+    offer->gives_gold_microgram_value = 0;
+    offer->receives_gold_microgram_value = 0;
     offer->valid_start = 0;
     offer->valid_end = 0;
 	offer->subscription_interval = 0;
@@ -855,12 +855,12 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 	offer->insurance_policies_accepted = new __int64[16];
 	offer->insurance_policies_applied = new __int64[16];
 
-    offer->give_vtop = give_vtop;
-    offer->give_vcap = give_vcap;
-    offer->give_voucher_counts_vtop = give_voucher_counts_vtop;
-    offer->give_voucher_counts_vcap = give_voucher_counts_vcap;
-    offer->receive_vtop = receive_vtop;
-    offer->receive_vcap = receive_vcap;
+    offer->gives_vtop = give_vtop;
+    offer->gives_vcap = give_vcap;
+    offer->gives_voucher_counts_vtop = give_voucher_counts_vtop;
+    offer->gives_voucher_counts_vcap = give_voucher_counts_vcap;
+    offer->receives_vtop = receive_vtop;
+    offer->receives_vcap = receive_vcap;
     offer->receive_voucher_counts_vtop = receive_voucher_counts_vtop;
     offer->receive_voucher_counts_vcap = receive_voucher_counts_vcap;
     offer->insurance_policies_accepted_vtop = insurance_policies_accepted_vtop;
@@ -870,22 +870,22 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 
 	for (__int64 i = 0; i <= give_vtop + 1; i++) { {
             
-		offer->give->id = give[i].id;
+		offer->gives->id = give[i].id;
 
 		for (__int64 j = 0; j <= give[i].title_vtop+1; j++)
-			offer->give->title[j] = give[i].title[j];
-		offer->give->title_vtop = give[i].title_vtop;
-		offer->give->title_vcap = give[i].title_vcap;
+			offer->gives->title[j] = give[i].title[j];
+		offer->gives->title_vtop = give[i].title_vtop;
+		offer->gives->title_vcap = give[i].title_vcap;
 
         for (__int64 j = 0; j <= give[i].description_vtop + 1; j++)
-            offer->give->description[j] = give[i].description[j];
-        offer->give->description_vtop = give[i].description_vtop;
-        offer->give->description_vcap = give[i].description_vcap;
+            offer->gives->description[j] = give[i].description[j];
+        offer->gives->description_vtop = give[i].description_vtop;
+        offer->gives->description_vcap = give[i].description_vcap;
 
         for (__int64 j = 0; j <= give[i].media_url_vtop + 1; j++)
-            offer->give->media_url[j] = give[i].media_url[j];
-        offer->give->media_url_vtop = give[i].media_url_vtop;
-        offer->give->media_url_vcap = give[i].media_url_vcap;
+            offer->gives->media_url[j] = give[i].media_url[j];
+        offer->gives->media_url_vtop = give[i].media_url_vtop;
+        offer->gives->media_url_vcap = give[i].media_url_vcap;
 
         offer->valid_start = give[i].valid_start;
         offer->valid_end = give[i].valid_end;
@@ -893,30 +893,30 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
         offer->interval_type = give[i].interval_type;
         offer->intervals = give[i].intervals;
 
-        offer->give_gold_microgram_value = 0;
+        offer->gives_gold_microgram_value = 0;
 
 		for (__int64 j = 0; j <= give_voucher_counts_vtop + 1; j++)
-            offer->give_gold_microgram_value += give->gold_microgram_value;
+            offer->gives_gold_microgram_value += give->gold_microgram_value;
 	}
 
     for (__int64 i = 0; i <= receive_vtop + 1; i++) {
 
-        offer->receive->id = receive[i].id;
+        offer->receives->id = receive[i].id;
 
         for (__int64 j = 0; j <= receive[i].title_vtop + 1; j++)
-            offer->receive->title[j] = receive[i].title[j];
-        offer->receive->title_vtop = receive[i].title_vtop;
-        offer->receive->title_vcap = receive[i].title_vcap;
+            offer->receives->title[j] = receive[i].title[j];
+        offer->receives->title_vtop = receive[i].title_vtop;
+        offer->receives->title_vcap = receive[i].title_vcap;
 
         for (__int64 j = 0; j <= receive[i].description_vtop + 1; j++)
-            offer->receive->description[j] = receive[i].description[j];
-        offer->receive->description_vtop = receive[i].description_vtop;
-        offer->receive->description_vcap = receive[i].description_vcap;
+            offer->receives->description[j] = receive[i].description[j];
+        offer->receives->description_vtop = receive[i].description_vtop;
+        offer->receives->description_vcap = receive[i].description_vcap;
 
         for (__int64 j = 0; j <= receive[i].media_url_vtop + 1; j++)
-            offer->receive->media_url[j] = receive[i].media_url[j];
-        offer->receive->media_url_vtop = receive[i].media_url_vtop;
-        offer->receive->media_url_vcap = receive[i].media_url_vcap;
+            offer->receives->media_url[j] = receive[i].media_url[j];
+        offer->receives->media_url_vtop = receive[i].media_url_vtop;
+        offer->receives->media_url_vcap = receive[i].media_url_vcap;
 
         offer->valid_start = receive[i].valid_start;
         offer->valid_end = receive[i].valid_end;
@@ -924,10 +924,10 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
         offer->interval_type = receive[i].interval_type;
         offer->intervals = receive[i].intervals;
 
-        offer->receive_gold_microgram_value = 0;
+        offer->receives_gold_microgram_value = 0;
 
         for (__int64 j = 0; j <= receive_voucher_counts_vtop + 1; j++)
-            offer->receive_gold_microgram_value += receive->gold_microgram_value;
+            offer->receives_gold_microgram_value += receive->gold_microgram_value;
     }
 
     offer->valid_start = give[0].valid_start;
@@ -953,12 +953,12 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
     for (__int64 j = 0; j <= insurance_policies_applied_vtop + 1; j++)
         offer->insurance_policies_applied[j] = insurance_policies_applied[j];
 
-    offer->give_vtop = -1;
-    offer->give_vcap = 16;
-    offer->give_voucher_counts_vtop = -1;
-    offer->give_voucher_counts_vcap = 16;
-    offer->receive_vtop = -1;
-    offer->receive_vcap = 16;
+    offer->gives_vtop = -1;
+    offer->gives_vcap = 16;
+    offer->gives_voucher_counts_vtop = -1;
+    offer->gives_voucher_counts_vcap = 16;
+    offer->receives_vtop = -1;
+    offer->receives_vcap = 16;
     offer->receive_voucher_counts_vtop = -1;
     offer->receive_voucher_counts_vcap = 16;
     offer->insurance_policies_accepted_vtop = -1;
@@ -1133,11 +1133,11 @@ Participant* create_participant(Market* market) {
 
 	participant->id = retrieve_participant_id(market->id_pool);
 	participant->require = new __int64[16];
-	participant->ban = new __int64[16];
+	participant->bans = new __int64[16];
 	participant->require_vtop = -1;
 	participant->require_vcap = 16;
-	participant->ban_vtop = -1;
-	participant->ban_vcap = 16;
+	participant->bans_vtop = -1;
+	participant->bans_vcap = 16;
 
 	return participant;
 }
@@ -1182,11 +1182,11 @@ Participant* create_participant(Market* market) {
 
     participant->id = retrieve_participant_id(market->id_pool);
     participant->require = new __int64[16];
-    participant->ban = new __int64[16];
+    participant->bans = new __int64[16];
     participant->require_vtop = -1;
     participant->require_vcap = 16;
-    participant->ban_vtop = -1;
-    participant->ban_vcap = 16;
+    participant->bans_vtop = -1;
+    participant->bans_vcap = 16;
 
     return participant;
 }
