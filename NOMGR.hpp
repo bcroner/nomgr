@@ -37,6 +37,7 @@ typedef struct ID_Pool_tag {
 typedef struct Voucher_tag {
 
 	__int64 id;
+	__int64 classification;
 	char* title;
 	char* description;
 	char* media_url;
