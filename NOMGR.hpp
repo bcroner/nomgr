@@ -365,7 +365,7 @@ typedef struct Gold_Deposit_tag {
 
 typedef struct Vault_tag {
 
-	Gold_Deposit* gold_deposits;
+	Gold_Deposit** gold_deposits;
 	__int64* gold_deposits_counts;
 
 	__int64* gold_deposits_vtop;
