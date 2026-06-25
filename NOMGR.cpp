@@ -514,7 +514,7 @@ void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
 Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
     __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
     __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
-    __int64* exclude, __int64* exclude_vtop, __int64* exclude_vcap) {
+    __int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap) {
 
     Offer* offer = new Offer();
 
@@ -551,7 +551,7 @@ Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64
     offer->logic_l_vtop = -1;
     offer->logic_r_vcap = 16;
 
-	for (__int64 i = 0; i <= give_vtop+1; i++) { {
+	for (__int64 i = 0; i <= give_vtop + 1; i++) { {
             
 		offer->give->id = give[i].id;
 
@@ -637,8 +637,8 @@ Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64
         offer->insurance_policies_applied[j] = insurance_policies_applied[j];
 
     
-    offer->logic_l = new __int64[16];
-    offer->logic_r = new __int64[16];
+    offer->logic_l = simp_vector_create(16);
+    offer->logic_r = simp_vector_create(16);
 
     offer->give_vtop = -1;
     offer->give_vcap = 16;
@@ -656,6 +656,75 @@ Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64
     offer->logic_r_vcap = 16;
     offer->logic_l_vtop = -1;
     offer->logic_r_vcap = 16;
+    
+	__int64 logic_ix = 2;
+	__int64 offer_ix = 2;
+    logic_ix++;
+
+    simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), offer_ix);
+    simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), FALSE_2SAT);
+
+    __int64 give_ix = logic_ix;
+    __int64 receive_ix = logic_ix;
+    __int64 voucher_ix = logic_ix;
+	__int64 participant_require_ix = logic_ix;
+    __int64 participant_ban_ix = logic_ix;
+
+	for (__int64 i = 0; i <= give_vtop + 1; i++) {
+		
+        voucher_ix = logic_ix;
+        logic_ix++;
+		give_ix = voucher_ix;
+
+        simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), offer_ix);
+        simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), -give_ix);
+
+        simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), -offer_ix);
+        simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), give_ix);
+
+        simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), give_ix);
+        simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), FALSE_2SAT);
+        
+	}
+
+    for (__int64 i = 0; i <= receive_vtop + 1; i++) {
+
+        voucher_ix = logic_ix;
+        logic_ix++;
+        receive_ix = voucher_ix;
+
+        simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), offer_ix);
+        simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), -receive_ix);
+
+        simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), -offer_ix);
+        simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), receive_ix);
+
+        simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), receive_ix);
+        simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), FALSE_2SAT);
+
+    }
+
+    for (__int64 i = 0; i <= participant_require_vtop + 1; i++) {
+
+        participant_require_ix = logic_ix;
+        logic_ix++;
+
+        simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), participant_require_ix);
+        simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), FALSE_2SAT);
+
+    }
+
+    for (__int64 i = 0; i <= participant_ban_vtop + 1; i++) {
+
+        participant_ban_ix = logic_ix;
+        logic_ix++;
+
+        simp_vector_append(&(offer->logic_l), &(offer->logic_l_vtop), &(offer->logic_l_vcap), -participant_ban_ix);
+        simp_vector_append(&(offer->logic_r), &(offer->logic_r_vtop), &(offer->logic_r_vcap), FALSE_2SAT);
+
+    }
+
+    return offer;
 
 }
 
