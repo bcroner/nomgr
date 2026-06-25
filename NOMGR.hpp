@@ -487,7 +487,7 @@ Gold_Deposit* simp_gold_deposit_vector_read(Gold_Deposit** v, __int64 vtop, __in
 void simp_gold_deposit_vector_append(Gold_Deposit*** v, __int64* vtop, __int64* vcap, Gold_Deposit* data);
 Participant** simp_participant_vector_create(__int64 init_sz);
 Participant* simp_participant_vector_read(Participant** v, __int64 vtop, __int64 vcap, __int64 loc);
-void simp_participant_vector_append(Participant** v, __int64* vtop, __int64* vcap, Participant* data);
+void simp_participant_vector_append(Participant*** v, __int64* vtop, __int64* vcap, Participant* data);
 char* simp_char_vector_create(__int64 init_sz);
 char simp_char_vector_read(char* v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_char_vector_append(char** v, __int64* vtop, __int64* vcap, char data);

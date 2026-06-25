@@ -265,9 +265,43 @@ void simp_law_vector_append(Law*** v, __int64* vtop, __int64* vcap, Law* data) {
 
 }
 
+Participant** simp_participant_vector_create(__int64 init_sz) {
+
+    Participant** ret = new Participant* [init_sz];
+    return ret;
+
+}
+
+Participant* simp_participant_vector_read(Participant** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_participant_vector_append(Participant*** v, __int64* vtop, __int64* vcap, Participant* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Participant** newv = new Participant * [*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+}
+
 Gold_Deposit** simp_gold_deposit_vector_create(__int64 init_sz) {
 
-    Gold_Deposit** ret = new Gold_Deposit*[init_sz];
+    Gold_Deposit** ret = new Gold_Deposit * [init_sz];
     return ret;
 
 }
@@ -296,75 +330,6 @@ void simp_gold_deposit_vector_append(Gold_Deposit*** v, __int64* vtop, __int64* 
         delete[](*v);
         *v = newv;
         (*v)[*vtop] = data;
-    }
-
-}
-
-Participant** simp_participant_vector_create(__int64 init_sz) {
-
-    Participant** ret = new Participant* [init_sz];
-    return ret;
-
-}
-
-Participant* simp_participant_vector_read(Participant** v, __int64 vtop, __int64 vcap, __int64 loc) {
-
-    if (loc > vtop)
-        return 0;
-
-    return v[loc];
-}
-
-void simp_participant_vector_append(Participant** v, __int64* vtop, __int64* vcap, Participant* data) {
-
-    *vtop = *vtop + 1;
-
-    if (*vtop < *vcap)
-        (*v)[*vtop] = data;
-    else {
-        Participant** newv = new Participant * [*vcap * 2];
-        for (__int64 i = 0; i < *vcap * 2; i++)
-            newv[i] = 0;
-        for (__int64 i = 0; i < *vcap; i++)
-            newv[i] = (*v)[i];
-        *vcap = *vcap * 2;
-        delete[](*v);
-        v = newv;
-        v[*vtop] = data;
-    }
-}
-
-Gold_Deposit** simp_gold_deposit_vector_create(__int64 init_sz) {
-
-    Gold_Deposit** ret = new Gold_Deposit * [init_sz];
-    return ret;
-
-}
-
-Gold_Deposit* simp_gold_deposit_vector_read(Gold_Deposit** v, __int64 vtop, __int64 vcap, __int64 loc) {
-
-    if (loc > vtop)
-        return 0;
-
-    return v[loc];
-}
-
-void simp_gold_deposit_vector_append(Gold_Deposit** v, __int64* vtop, __int64* vcap, Gold_Deposit* data) {
-
-    *vtop = *vtop + 1;
-
-    if (*vtop < *vcap)
-        (*v)[*vtop] = data;
-    else {
-        Gold_Deposit** newv = new Gold_Deposit * [*vcap * 2];
-        for (__int64 i = 0; i < *vcap * 2; i++)
-            newv[i] = 0;
-        for (__int64 i = 0; i < *vcap; i++)
-            newv[i] = (*v)[i];
-        *vcap = *vcap * 2;
-        delete[](*v);
-        v = newv;
-        v[*vtop] = data;
     }
 }
 
