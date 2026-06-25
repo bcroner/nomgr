@@ -340,8 +340,8 @@ typedef struct Code_tag {
 
 	Law* laws;
 
-	__int64* laws_vtop;
-	__int64* laws_vcap;
+	__int64 laws_vtop;
+	__int64 laws_vcap;
 
 } Code;
 
@@ -388,6 +388,7 @@ typedef struct Participant_tag {
 
 typedef struct Market_tag {
 
+	ID_Pool* id_pool;
 	Barter_System* barter_system;
 	Participant** participants;
 	Account* accounts;
@@ -418,7 +419,6 @@ typedef struct System_tag {
 	Market* market;
 	Legal_System* legal_system;
 	Vault* vault;
-	ID_Pool* id_pool;
 } System;
 
 typedef struct Simp_Queue_tag {
@@ -500,8 +500,33 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 	__int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
 	__int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
 	__int64* require, __int64 require_vtop, __int64 require_vcap, __int64* ban, __int64 ban_vtop, __int64 ban_vcap);
-Market* create_market(Barter_System** barter_system, Participant** participants);
-Trade_Check* create_trade_check(Market** market);
+int id_pool_retrieve(__int64* id_pool, __int64* id_pool_vtop, __int64* id_pool_vcap);
+void id_pool_submit(__int64* id_pool, __int64* id_pool_vtop, __int64* id_pool_vcap, __int64 id);
+__int64 retrieve_voucher_id(ID_Pool* id_pool);
+void submit_voucher_id(ID_Pool* id_pool, __int64 id);
+__int64 retrieve_account_id(ID_Pool* id_pool);
+void submit_account_id(ID_Pool* id_pool, __int64 id);
+__int64 retrieve_bank_id(ID_Pool* id_pool);
+void submit_bank_id(ID_Pool* id_pool, __int64 id);
+__int64 retrieve_offer_id(ID_Pool* id_pool);
+void submit_offer_id(ID_Pool* id_pool, __int64 id);
+__int64 retrieve_bill_id(ID_Pool* id_pool);
+void submit_bill_id(ID_Pool* id_pool, __int64 id);
+__int64 retrieve_law_id(ID_Pool* id_pool);
+void submit_law_id(ID_Pool* id_pool, __int64 id);
+__int64 retrieve_gold_deposit_id(ID_Pool* id_pool);
+void submit_gold_deposit_id(ID_Pool* id_pool, __int64 id);
+__int64 retrieve_participant_id(ID_Pool* id_pool);
+void submit_participant_id(ID_Pool* id_pool, __int64 id);
+Offer** create_offers();
+Barter_System* create_barter_system();
+Participant** create_participants();
+Account* create_accounts();
+Bank* create_banks();
+Market* create_market();
+ID_Pool* create_id_pool();
+System* create_system();
+Trade_Check* create_trade_check(Market* market);
 bool check_trade(SATSolver* s, Trade_Check* trade_check);
 bool* SATSolver_create_boundary(bool begin, __int64 chop, __int64 offs, __int64 n, __int64 leading_trues);
 void SATSolver_create(SATSolver*** s, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm);
