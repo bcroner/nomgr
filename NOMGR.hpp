@@ -98,38 +98,41 @@ typedef struct Offer_tag {
 
 	__int64 id;
 
-	Voucher* give;
-	__int64* give_voucher_counts;
-	Voucher* receive;
-	__int64* receive_voucher_counts;
-	__int64 give_gold_microgram_value;
-	__int64 receive_gold_microgram_value;
+	Voucher* gives;
+	__int64* gives_voucher_counts;
+	Voucher* receives;
+	__int64* receives_voucher_counts;
+	__int64 gives_gold_microgram_value;
+	__int64 receives_gold_microgram_value;
 	__int64 valid_start;
 	__int64 valid_end;
 	__int64 subscription_interval;
 	__int64 interval_type;
 	__int64 intervals;
 	__int64* insurance_policies_accepted;
+	__int64* insurance_policies_required;
 	__int64* insurance_policies_applied;
 	__int64* require;
-	__int64* ban;
+	__int64* bans;
 
-	__int64 give_vtop;
-	__int64 give_vcap;
-	__int64 give_voucher_counts_vtop;
-	__int64 give_voucher_counts_vcap;
-	__int64 receive_vtop;
-	__int64 receive_vcap;
+	__int64 gives_vtop;
+	__int64 gives_vcap;
+	__int64 gives_voucher_counts_vtop;
+	__int64 gives_voucher_counts_vcap;
+	__int64 receives_vtop;
+	__int64 receives_vcap;
 	__int64 receive_voucher_counts_vtop;
 	__int64 receive_voucher_counts_vcap;
 	__int64 insurance_policies_accepted_vtop;
 	__int64 insurance_policies_accepted_vcap;
+	__int64 insurance_policies_required_vtop;
+	__int64 insurance_policies_required_vcap;
 	__int64 insurance_policies_applied_vtop;
 	__int64 insurance_policies_applied_vcap;
 	__int64 require_vtop;
 	__int64 require_vcap;
-	__int64 ban_vtop;
-	__int64 ban_vcap;
+	__int64 bans_vtop;
+	__int64 bans_vcap;
 
 } Offer;
 
@@ -338,7 +341,7 @@ typedef struct Law_tag {
 
 typedef struct Code_tag {
 
-	Law* laws;
+	Law** laws;
 
 	__int64 laws_vtop;
 	__int64 laws_vcap;
@@ -377,12 +380,12 @@ typedef struct Participant_tag {
 	__int64 id;
 
 	__int64* require;
-	__int64* ban;
+	__int64* bans;
 	
 	__int64 require_vtop;
 	__int64 require_vcap;
-	__int64 ban_vtop;
-	__int64 ban_vcap;
+	__int64 bans_vtop;
+	__int64 bans_vcap;
 
 } Participant;
 
@@ -391,8 +394,8 @@ typedef struct Market_tag {
 	ID_Pool* id_pool;
 	Barter_System* barter_system;
 	Participant** participants;
-	Account* accounts;
-	Bank* banks;
+	Account** accounts;
+	Bank** banks;
 
 	__int64 participants_vtop;
 	__int64 participants_vcap;
@@ -525,6 +528,9 @@ void submit_gold_deposit_id(ID_Pool* id_pool, __int64 id);
 __int64 retrieve_participant_id(ID_Pool* id_pool);
 void submit_participant_id(ID_Pool* id_pool, __int64 id);
 Offer** create_offers();
+Participant* create_participant(Market* market);
+Account* create_account(Market* market, __int64 gold_microgram_balance, Voucher* vouchers, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap);
+Bank* create_bank(Market* market, Account* accounts, Participant** account_holders, __int64 accounts_vtop, __int64 accounts_vcap, __int64 account_holders_vtop, __int64 account_holders_vcap);
 Barter_System* create_barter_system();
 Market* create_market();
 ID_Pool* create_id_pool();
