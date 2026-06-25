@@ -4,6 +4,36 @@
 #define TRUE_2SAT 1
 #define FALSE_2SAT -1
 
+typedef struct ID_Pool_tag {
+
+	__int64* vouchers;
+	__int64* accounts;
+	__int64* banks;
+	__int64* offers;
+	__int64* bills;
+	__int64* laws;
+	__int64* gold_deposits;
+	__int64* participants;
+
+	__int64 vouchers_vtop;
+	__int64 vouchers_vcap;
+	__int64 accounts_vtop;
+	__int64 accounts_vcap;
+	__int64 banks_vtop;
+	__int64 banks_vcap;
+	__int64 offers_vtop;
+	__int64 offers_vcap;
+	__int64 bills_vtop;
+	__int64 bills_vcap;
+	__int64 laws_vtop;
+	__int64 laws_vcap;
+	__int64 gold_deposits_vtop;
+	__int64 gold_deposits_vcap;
+	__int64 participants_vtop;
+	__int64 participants_vcap;
+
+} ID_Pool;
+
 typedef struct Voucher_tag {
 
 	__int64 id;
@@ -383,6 +413,13 @@ typedef struct Trade_Check_tag {
 	__int64 lst_r_vcap;
 
 } Trade_Check;
+
+typedef struct System_tag {
+	Market* market;
+	Legal_System* legal_system;
+	Vault* vault;
+	ID_Pool* id_pool;
+} System;
 
 typedef struct Simp_Queue_tag {
 

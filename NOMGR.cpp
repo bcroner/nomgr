@@ -54,14 +54,14 @@ void simp_article_v_option_vector_append(Article_V_Option*** v, __int64* vtop, _
 
 }
 
-Voucher* simp_voucher_vector_create(__int64 init_sz) {
+bank* simp_bank_vector_create(__int64 init_sz) {
 
-    Voucher* ret = new Voucher[init_sz];
+    bank* ret = new bank[init_sz];
     return ret;
 
 }
 
-Voucher* simp_voucher_vector_read(Voucher** v, __int64 vtop, __int64 vcap, __int64 loc) {
+bank* simp_bank_vector_read(bank** v, __int64 vtop, __int64 vcap, __int64 loc) {
 
     if (loc > vtop)
         return 0;
@@ -69,14 +69,14 @@ Voucher* simp_voucher_vector_read(Voucher** v, __int64 vtop, __int64 vcap, __int
     return v[loc];
 }
 
-void simp_voucher_vector_append(Voucher*** v, __int64* vtop, __int64* vcap, Voucher* data) {
+void simp_bank_vector_append(bank*** v, __int64* vtop, __int64* vcap, bank* data) {
 
     *vtop = *vtop + 1;
 
     if (*vtop < *vcap)
         (*v)[*vtop] = data;
     else {
-        Voucher** newv = new Voucher*[*vcap * 2];
+        bank** newv = new bank*[*vcap * 2];
         for (__int64 i = 0; i < *vcap * 2; i++)
             newv[i] = 0;
         for (__int64 i = 0; i < *vcap; i++)
@@ -480,6 +480,28 @@ Simp_Queue* simp_queue_dequeue(Simp_Queue* queu, std::vector<std::thread> thread
 	
 }
 
+void make_offer(Market* market, __int64 participant_id, bank* give, __int64 give_vtop, __int64 give_vcap, __int64* give_bank_counts, __int64 give_bank_counts_vtop, __int64 give_bank_counts_vcap, bank* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_bank_counts, __int64 receive_bank_counts_vtop, __int64 receive_bank_counts_vcap,
+    __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
+    __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
+    __int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
+    __int64* require, __int64 require_vtop, __int64 require_vcap, __int64* ban, __int64 ban_vtop, __int64 ban_vcap) {
+
+	Offer* offer = create_offer(id, give, give_vtop, give_vcap, give_bank_counts, give_bank_counts_vtop, give_bank_counts_vcap, receive, receive_vtop, receive_vcap, receive_bank_counts, receive_bank_counts_vtop, receive_bank_counts_vcap,
+        valid_start, valid_end, subscription_interval, interval_type, intervals,
+        insurance_policies_accepted, insurance_policies_accepted_vtop, insurance_policies_accepted_vcap, insurance_policies_applied, insurance_policies_applied_vtop, insurance_policies_applied_vcap,
+        participant_exclude, participant_exclude_vtop, participant_exclude_vcap, participant_require, participant_require_vtop, participant_require_vcap, participant_ban, participant_ban_vtop, participant_ban_vcap,
+        require, require_vtop, require_vcap, ban, ban_vtop, ban_vcap);
+
+	__int64 participant_ix = 0;
+	for (__int64 i = 0; i <= market->participants_vtop; i++) {
+		if (market->participants[i]->id == participant_id) {
+			participant_ix = i;
+			break;
+		}
+	}
+	simp_vector_append(&(market->barter_system->offers), &(market->barter_system->offers_vtop), &(market->barter_system->offers_vcap), offer);
+}
+
 void create_require_participant(Market* market, __int64 participant_id, __int64 itm) {
 
     __int64 participant_ix = 0;
@@ -707,7 +729,7 @@ void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
 
 }
 
-Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+Offer* create_offer(__int64 id, bank* give, __int64 give_vtop, __int64 give_vcap, __int64* give_bank_counts, __int64 give_bank_counts_vtop, __int64 give_bank_counts_vcap, bank* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_bank_counts, __int64 receive_bank_counts_vtop, __int64 receive_bank_counts_vcap,
     __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
     __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
     __int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
@@ -715,10 +737,10 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 
     Offer* offer = new Offer();
 
-    offer->give = new Voucher[give_vtop+1];
-    offer->give_voucher_counts = new __int64[16];
-    offer->receive = new Voucher[16];
-    offer->receive_voucher_counts[16];
+    offer->give = new bank[give_vtop+1];
+    offer->give_bank_counts = new __int64[16];
+    offer->receive = new bank[16];
+    offer->receive_bank_counts[16];
     offer->give_gold_microgram_value = 0;
     offer->receive_gold_microgram_value = 0;
     offer->valid_start = 0;
@@ -731,12 +753,12 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 
     offer->give_vtop = give_vtop;
     offer->give_vcap = give_vcap;
-    offer->give_voucher_counts_vtop = give_voucher_counts_vtop;
-    offer->give_voucher_counts_vcap = give_voucher_counts_vcap;
+    offer->give_bank_counts_vtop = give_bank_counts_vtop;
+    offer->give_bank_counts_vcap = give_bank_counts_vcap;
     offer->receive_vtop = receive_vtop;
     offer->receive_vcap = receive_vcap;
-    offer->receive_voucher_counts_vtop = receive_voucher_counts_vtop;
-    offer->receive_voucher_counts_vcap = receive_voucher_counts_vcap;
+    offer->receive_bank_counts_vtop = receive_bank_counts_vtop;
+    offer->receive_bank_counts_vcap = receive_bank_counts_vcap;
     offer->insurance_policies_accepted_vtop = insurance_policies_accepted_vtop;
     offer->insurance_policies_accepted_vcap = insurance_policies_accepted_vcap;
     offer->insurance_policies_applied_vtop = insurance_policies_applied_vtop;
@@ -769,7 +791,7 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 
         offer->give_gold_microgram_value = 0;
 
-		for (__int64 j = 0; j <= give_voucher_counts_vtop + 1; j++)
+		for (__int64 j = 0; j <= give_bank_counts_vtop + 1; j++)
             offer->give_gold_microgram_value += give->gold_microgram_value;
 	}
 
@@ -800,7 +822,7 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 
         offer->receive_gold_microgram_value = 0;
 
-        for (__int64 j = 0; j <= receive_voucher_counts_vtop + 1; j++)
+        for (__int64 j = 0; j <= receive_bank_counts_vtop + 1; j++)
             offer->receive_gold_microgram_value += receive->gold_microgram_value;
     }
 
@@ -829,12 +851,12 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 
     offer->give_vtop = -1;
     offer->give_vcap = 16;
-    offer->give_voucher_counts_vtop = -1;
-    offer->give_voucher_counts_vcap = 16;
+    offer->give_bank_counts_vtop = -1;
+    offer->give_bank_counts_vcap = 16;
     offer->receive_vtop = -1;
     offer->receive_vcap = 16;
-    offer->receive_voucher_counts_vtop = -1;
-    offer->receive_voucher_counts_vcap = 16;
+    offer->receive_bank_counts_vtop = -1;
+    offer->receive_bank_counts_vcap = 16;
     offer->insurance_policies_accepted_vtop = -1;
     offer->insurance_policies_accepted_vcap = 16;
     offer->insurance_policies_applied_vtop = -1;
@@ -855,12 +877,53 @@ Barter_System* create_barter_system(Offer** offers, __int64 offers_vtop, __int64
 
 }
 
-Market* create_market(Barter_System** barter_system, Participant** participants) {
+Barter_System* create_barter_system() {
+
+	Barter_System* barter_system = new Barter_System();
+	barter_system->offers = create_offers();
+	barter_system->offers_vtop = -1;
+	barter_system->offers_vcap = 16;
+	return barter_system;
+
+}
+
+Participant* create_participants() {
+
+	Participant* participants = new Participant();
+	participants->id = 0;
+	participants->require = create_require();
+	participants->ban = create_ban();
+	participants->require_vtop = -1;
+	participants->require_vcap = 16;
+	participants->ban_vtop = -1;
+	participants->ban_vcap = 16;
+	return participants;
+}
+
+Account* create_accounts() {
+
+	Account* accounts = new Account();
+	accounts->id = 0;
+	accounts->balance_micrograms = 0;
+	return accounts;
+}
+
+Bank create_banks() {
+
+	Bank banks = new Bank();
+	banks->id = 0;
+	banks->name = "";
+	return banks;
+}
+
+Market* create_market() {
 
 	Market* market = new Market();
 
-    market->barter_systems = *barter_system;
-    market->participants = *participants;
+    market->barter_system = create_barter_system();
+    market->participants = create_participants();
+    market->accounts = create_accounts();
+    market->banks = create_banks();
 
 	return market;
 }
@@ -883,9 +946,9 @@ Trade_Check* create_trade_check(Market* market) {
 
     __int64 gives_ix = 0;
     __int64 receives_ix = 0;
-    __int64 vouchers_ix = 0;
-	__int64 vouchers_gives_ix = 0;
-    __int64 vouchers_receives_ix = 0;
+    __int64 banks_ix = 0;
+	__int64 banks_gives_ix = 0;
+    __int64 banks_receives_ix = 0;
 	__int64 participants_ix = 0;
     __int64 participants_requires_ix = 0;
     __int64 participants_bans_ix = 0;
@@ -903,30 +966,30 @@ Trade_Check* create_trade_check(Market* market) {
 
         for (__int64 j = 0; j <= market->barter_system->offers->give_vtop + 1; i++) {
 
-            vouchers_ix = logic_ix;
+            banks_ix = logic_ix;
             logic_ix++;
-            vouchers_gives_ix = vouchers_ix;
+            banks_gives_ix = banks_ix;
 
             simp_vector_append(&(trade_check->logic_l), &(trade_check->logic_l_vtop), &(trade_check->logic_l_vcap), offers_ix);
-            simp_vector_append(&(trade_check->logic_r), &(trade_check->logic_r_vtop), &(trade_check->logic_r_vcap), -vouchers_gives_ix);
+            simp_vector_append(&(trade_check->logic_r), &(trade_check->logic_r_vtop), &(trade_check->logic_r_vcap), -banks_gives_ix);
 
             simp_vector_append(&(trade_check->logic_l), &(trade_check->logic_l_vtop), &(trade_check->logic_l_vcap), -offers_ix);
-            simp_vector_append(&(trade_check->logic_r), &(trade_check->logic_r_vtop), &(trade_check->logic_r_vcap), vouchers_gives_ix);
+            simp_vector_append(&(trade_check->logic_r), &(trade_check->logic_r_vtop), &(trade_check->logic_r_vcap), banks_gives_ix);
 
 
         }
 
         for (__int64 j = 0; j <= market->barter_system->offers->receive_vtop + 1; i++) {
 
-            vouchers_ix = logic_ix;
+            banks_ix = logic_ix;
             logic_ix++;
-            vouchers_receives_ix = vouchers_receives_ix;
+            banks_receives_ix = banks_receives_ix;
 
             simp_vector_append(&(trade_check->logic_l), &(trade_check->logic_l_vtop), &(trade_check->logic_l_vcap), offers_ix);
-            simp_vector_append(&(trade_check->logic_r), &(trade_check->logic_r_vtop), &(trade_check->logic_r_vcap), -vouchers_receives_ix);
+            simp_vector_append(&(trade_check->logic_r), &(trade_check->logic_r_vtop), &(trade_check->logic_r_vcap), -banks_receives_ix);
 
             simp_vector_append(&(trade_check->logic_l), &(trade_check->logic_l_vtop), &(trade_check->logic_l_vcap), -offers_ix);
-            simp_vector_append(&(trade_check->logic_r), &(trade_check->logic_r_vtop), &(trade_check->logic_r_vcap), vouchers_receives_ix);
+            simp_vector_append(&(trade_check->logic_r), &(trade_check->logic_r_vtop), &(trade_check->logic_r_vcap), banks_receives_ix);
 
         }
 
@@ -1021,6 +1084,155 @@ Trade_Check* create_trade_check(Market* market) {
 
 	return trade_check;
 
+}
+
+int id_pool_retrieve(__int64* id_pool, __int64 *id_pool_vtop, __int64 *id_pool_vcap) {
+
+	if (*id_pool_vtop == -1) {
+		simp_vector_append(*id_pool, id_pool_vtop, id_pool_vcap, 0);
+		return 0;
+	}
+
+	__int64 id = id_pool[*id_pool_vtop+1];
+
+    __int64 ix = -1;
+
+    for (__int64 i = 0; i <= *id_pool_vtop + 1; i++) {
+        if (id_pool[i] > id) {
+            ix = i;
+            break;
+        }
+    }
+
+    for (__int64 i = ix; i <= *id_pool_vtop; i++)
+        id_pool[i] = id_pool[i + 1];
+
+    return id;
+
+}
+
+void id_pool_submit(__int64* id_pool, __int64* id_pool_vtop, __int64* id_pool_vcap, __int64 id) {
+
+	__int64 ix = -1;
+
+	for (__int64 i = 0; i <= *id_pool_vtop + 1; i++) {
+		if (id_pool[i] > id) {
+			ix = i;
+			break;
+		}
+	}
+
+	simp_vector_append(&(id_pool), id_pool_vtop, id_pool_vcap, id_pool[*id_pool_vtop+1]);
+
+	for (__int64 i = ix; i <= *id_pool_vtop; i++)
+		id_pool[i] = id_pool[i + 1];
+
+	id_pool[ix] = id;
+
+}
+
+__int64 retrieve_voucher_id(ID_Pool* id_pool) {
+	return id_pool_retrieve(id_pool->vouchers, &(id_pool->vouchers_vtop), &(id_pool->vouchers_vcap));
+}
+
+void submit_voucher_id(ID_Pool* id_pool, __int64 id) {
+	id_pool_submit(id_pool->vouchers, &(id_pool->vouchers_vtop), &(id_pool->vouchers_vcap), id);
+}
+
+__int64 retrieve_account_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->accounts, &(id_pool->accounts_vtop), &(id_pool->accounts_vcap));
+}
+
+void submit_account_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->accounts, &(id_pool->accounts_vtop), &(id_pool->accounts_vcap), id);
+}
+
+__int64 retrieve_bank_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->banks, &(id_pool->banks_vtop), &(id_pool->banks_vcap));
+}
+
+void submit_bank_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->banks, &(id_pool->banks_vtop), &(id_pool->banks_vcap), id);
+}
+
+__int64 retrieve_offer_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->offers, &(id_pool->offers_vtop), &(id_pool->offers_vcap));
+}
+
+void submit_offer_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->offers, &(id_pool->offers_vtop), &(id_pool->offers_vcap), id);
+}
+
+__int64 retrieve_bill_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->bills, &(id_pool->bills_vtop), &(id_pool->bills_vcap));
+}
+
+void submit_bill_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->bills, &(id_pool->bills_vtop), &(id_pool->bills_vcap), id);
+}
+
+__int64 retrieve_law_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->laws, &(id_pool->laws_vtop), &(id_pool->laws_vcap));
+}
+
+void submit_law_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->laws, &(id_pool->laws_vtop), &(id_pool->laws_vcap), id);
+}
+
+__int64 retrieve_gold_deposit_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->gold_deposits, &(id_pool->gold_deposits_vtop), &(id_pool->gold_deposits_vcap));
+}
+
+void submit_gold_deposit_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->gold_deposits, &(id_pool->gold_deposits), &(id_pool->gold_deposits), id);
+}
+
+__int64 retrieve_participant_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->participants, &(id_pool->participants_vtop), &(id_pool->participants_vcap));
+}
+
+void submit_participant_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->participants, &(id_pool->participants_vtop), &(id_pool->participants_vcap), id);
+}
+
+ID_Pool* create_id_pool() {
+
+	ID_Pool* id_pool = new ID_Pool();
+
+    id_pool->banks = simp_vector_create(16);
+    id_pool->accounts = simp_vector_create(16);
+    id_pool->banks = simp_vector_create(16);
+    id_pool->offers = simp_vector_create(16);
+    id_pool->bills = simp_vector_create(16);
+    id_pool->laws = simp_vector_create(16);
+    id_pool->gold_deposits = simp_vector_create(16);
+    id_pool->participants = simp_vector_create(16);
+
+    id_pool->banks_vtop = -1;
+    id_pool->banks_vcap = 16;
+    id_pool->accounts_vtop = -1;
+    id_pool->accounts_vcap = 16;
+    id_pool->banks_vtop = -1;
+    id_pool->banks_vcap = 16;
+    id_pool->offers_vtop = -1;
+    id_pool->offers_vcap = 16;
+    id_pool->bills_vtop = -1;
+    id_pool->bills_vcap = 16;
+    id_pool->laws_vtop = -1;
+    id_pool->laws_vcap = 16;
+    id_pool->gold_deposits_vtop = -1;
+    id_pool->gold_deposits_vcap = 16;
+    id_pool->participants_vtop = -1;
+    id_pool->participants_vcap = 16;
+
+	return id_pool;
+}
+
+System* create_system(__int64 markets_vtop, __int64 markets_vcap) {
+
+	System* system = new System();
+	system->market = create_market(nullptr, nullptr);
+	return system;
 }
 
 bool check_trade(SATSolver* s, Trade_Check* trade_check) {
