@@ -43,12 +43,12 @@ typedef struct Bank_tag {
 	__int64 id;
 
 	Account* accounts;
-	Participant** participants;
+	Participant** account_holders;
 
 	__int64 accounts_vtop;
 	__int64 accounts_vcap;
-	__int64 participants_vtop;
-	__int64 participants_vcap;
+	__int64 account_holders_vtop;
+	__int64 account_holders_vcap;
 
 } Bank;
 
