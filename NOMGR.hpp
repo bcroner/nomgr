@@ -359,15 +359,16 @@ typedef struct Participant_tag {
 typedef struct Market_tag {
 
 	Barter_System* barter_system;
-
 	Participant** participants;
-
 	Account* accounts;
+	Bank* banks;
 
 	__int64 participants_vtop;
 	__int64 participants_vcap;
 	__int64 accounts_vtop;
-	accounts_vcap;
+	__int64 accounts_vcap;
+	__int64 banks_vtop;
+	__int64 banks_vcap;
 
 } Market;
 
