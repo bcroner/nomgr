@@ -40,6 +40,8 @@ typedef struct Voucher_System_tag {
 
 typedef struct Offer_tag {
 
+	__int64 id;
+
 	Voucher* give;
 	__int64* give_voucher_counts;
 	Voucher* receive;
@@ -53,8 +55,8 @@ typedef struct Offer_tag {
 	__int64 intervals;
 	__int64* insurance_policies_accepted;
 	__int64* insurance_policies_applied;
-	__int64* logic_l;
-	__int64* logic_r;
+	__int64* require;
+	__int64* ban;
 
 	__int64 give_vtop;
 	__int64 give_vcap;
@@ -68,16 +70,16 @@ typedef struct Offer_tag {
 	__int64 insurance_policies_accepted_vcap;
 	__int64 insurance_policies_applied_vtop;
 	__int64 insurance_policies_applied_vcap;
-	__int64 logic_l_vtop;
-	__int64 logic_l_vcap;
-	__int64 logic_r_vtop;
-	__int64 logic_r_vcap;
+	__int64 require_vtop;
+	__int64 require_vcap;
+	__int64 ban_vtop;
+	__int64 ban_vcap;
 
 } Offer;
 
 typedef struct Barter_System_tag {
 
-	Offer* offers;
+	Offer** offers;
 
 	__int64 offers_vtop;
 	__int64 offers_vcap;
@@ -320,23 +322,22 @@ typedef struct Participant_tag {
 
 	__int64* require;
 	__int64* ban;
-	__int64* insurance_policies_possessed;
 	
-	__int64* require_vtop;
-	__int64* require_vcap;
-	__int64* ban_vtop;
-	__int64* ban_vcap;
-	__int64* insurance_policies_possessed_vtop;
-	__int64* insurance_policies_possessed_vcap;
+	__int64 require_vtop;
+	__int64 require_vcap;
+	__int64 ban_vtop;
+	__int64 ban_vcap;
 
 } Participant;
 
 typedef struct Market_tag {
 
-	Participant* participants;
+	Barter_System* barter_system;
 
-	__int64* participants_vtop;
-	__int64* participants_vcap;
+	Participant** participants;
+
+	__int64 participants_vtop;
+	__int64 participants_vcap;
 
 } Market;
 
@@ -347,10 +348,10 @@ typedef struct Trade_Check_tag {
 	__int64* lst_l;
 	__int64* lst_r;
 
-	__int64* lst_l_vtop;
-	__int64* lst_l_vcap;
-	__int64* lst_r_vtop;
-	__int64* lst_r_vcap;
+	__int64 lst_l_vtop;
+	__int64 lst_l_vcap;
+	__int64 lst_r_vtop;
+	__int64 lst_r_vcap;
 
 } Trade_Check;
 
@@ -428,13 +429,14 @@ void remove_require_participant(Market* market, __int64 participant_id, __int64 
 void remove_require_offer(Market* market, __int64 offer_id, __int64 itm);
 void remove_ban_participant(Market* market, __int64 participant_id, __int64 itm);
 void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm);
-Offer* create_offer(Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
 	__int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
 	__int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
 	__int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
 	__int64* require, __int64 require_vtop, __int64 require_vcap, __int64* ban, __int64 ban_vtop, __int64 ban_vcap);
-Market* create_market(Participant** participants);
-Trade_Check* create_trade_check(Market* market);
+Barter_System* create_barter_system(Offer** offers, __int64 offers_vtop, __int64 offers_vcap);
+Market* create_market(Barter_System** barter_system, Participant** participants);
+Trade_Check* create_trade_check(Market** market);
 bool check_trade(SATSolver* s, Trade_Check* trade_check);
 bool* SATSolver_create_boundary(bool begin, __int64 chop, __int64 offs, __int64 n, __int64 leading_trues);
 void SATSolver_create(SATSolver*** s, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm);
