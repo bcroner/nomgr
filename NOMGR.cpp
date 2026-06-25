@@ -19,9 +19,9 @@
 #include <vector>
 #include <functional>
 
-Article_V_Option* simp_article_v_option_vector_create(__int64 init_sz) {
+Article_V_Option** simp_article_v_option_vector_create(__int64 init_sz) {
 
-    Article_V_Option* ret = new Article_V_Option[init_sz];
+    Article_V_Option** ret = new Article_V_Option*[init_sz];
     return ret;
 
 }
@@ -54,9 +54,79 @@ void simp_article_v_option_vector_append(Article_V_Option*** v, __int64* vtop, _
 
 }
 
-Bank* simp_bank_vector_create(__int64 init_sz) {
+Voucher** simp_voucher_vector_create(__int64 init_sz) {
 
-    Bank* ret = new Bank[init_sz];
+    Voucher** ret = new Voucher * [init_sz];
+    return ret;
+
+}
+
+Voucher* simp_voucher_vector_read(Voucher** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_voucher_vector_append(Voucher*** v, __int64* vtop, __int64* vcap, Voucher* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Voucher** newv = new Voucher * [*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+
+}
+
+Account** simp_account_vector_create(__int64 init_sz) {
+
+    Account** ret = new Account * [init_sz];
+    return ret;
+
+}
+
+Account* simp_account_vector_read(Account** v, __int64 vtop, __int64 vcap, __int64 loc) {
+
+    if (loc > vtop)
+        return 0;
+
+    return v[loc];
+}
+
+void simp_account_vector_append(Account*** v, __int64* vtop, __int64* vcap, Account* data) {
+
+    *vtop = *vtop + 1;
+
+    if (*vtop < *vcap)
+        (*v)[*vtop] = data;
+    else {
+        Account** newv = new Account * [*vcap * 2];
+        for (__int64 i = 0; i < *vcap * 2; i++)
+            newv[i] = 0;
+        for (__int64 i = 0; i < *vcap; i++)
+            newv[i] = (*v)[i];
+        *vcap = *vcap * 2;
+        delete[](*v);
+        *v = newv;
+        (*v)[*vtop] = data;
+    }
+
+}
+
+Bank** simp_bank_vector_create(__int64 init_sz) {
+
+    Bank** ret = new Bank*[init_sz];
     return ret;
 
 }
@@ -69,7 +139,7 @@ Bank* simp_bank_vector_read(Bank** v, __int64 vtop, __int64 vcap, __int64 loc) {
     return v[loc];
 }
 
-void simp_bank_vector_append(Bank*** v, __int64* vtop, __int64* vcap, bank* data) {
+void simp_bank_vector_append(Bank*** v, __int64* vtop, __int64* vcap, Bank* data) {
 
     *vtop = *vtop + 1;
 
@@ -89,9 +159,9 @@ void simp_bank_vector_append(Bank*** v, __int64* vtop, __int64* vcap, bank* data
 
 }
 
-Offer* simp_offer_vector_create(__int64 init_sz) {
+Offer** simp_offer_vector_create(__int64 init_sz) {
 
-    Offer* ret = new Offer[init_sz];
+    Offer** ret = new Offer*[init_sz];
     return ret;
 
 }
@@ -125,9 +195,9 @@ void simp_offer_vector_append(Offer*** v, __int64* vtop, __int64* vcap, Offer* d
 }
 
 
-Bill* simp_bill_vector_create(__int64 init_sz) {
+Bill** simp_bill_vector_create(__int64 init_sz) {
 
-    Bill* ret = new Bill[init_sz];
+    Bill** ret = new Bill*[init_sz];
     return ret;
 
 }
@@ -160,9 +230,9 @@ void simp_bill_vector_append(Bill*** v, __int64* vtop, __int64* vcap, Bill* data
 
 }
 
-Law* simp_law_vector_create(__int64 init_sz) {
+Law** simp_law_vector_create(__int64 init_sz) {
 
-    Law* ret = new Law[init_sz];
+    Law** ret = new Law*[init_sz];
     return ret;
 
 }
@@ -195,9 +265,9 @@ void simp_law_vector_append(Law*** v, __int64* vtop, __int64* vcap, Law* data) {
 
 }
 
-Gold_Deposit* simp_gold_deposit_vector_create(__int64 init_sz) {
+Gold_Deposit** simp_gold_deposit_vector_create(__int64 init_sz) {
 
-    Gold_Deposit* ret = new Gold_Deposit[init_sz];
+    Gold_Deposit** ret = new Gold_Deposit*[init_sz];
     return ret;
 
 }
