@@ -26,6 +26,32 @@ typedef struct Voucher_tag {
 
 } Voucher;
 
+typedef struct Account_tag {
+
+	__int64 id;
+	__int64 gold_microgram_balance;
+	Voucher* vouchers;
+	__int64* voucher_counts;
+	__int64 vouchers_vtop;
+	__int64 vouchers_vcap;
+	__int64 voucher_counts_vtop;
+	__int64 voucher_counts_vcap;
+} Account;
+
+typedef struct Bank_tag {
+
+	__int64 id;
+
+	Account* accounts;
+	Participant** participants;
+
+	__int64 accounts_vtop;
+	__int64 accounts_vcap;
+	__int64 participants_vtop;
+	__int64 participants_vcap;
+
+} Bank;
+
 typedef struct Voucher_System_tag {
 
 	Voucher* vouchers;
@@ -336,8 +362,12 @@ typedef struct Market_tag {
 
 	Participant** participants;
 
+	Account* accounts;
+
 	__int64 participants_vtop;
 	__int64 participants_vcap;
+	__int64 accounts_vtop;
+	accounts_vcap;
 
 } Market;
 
