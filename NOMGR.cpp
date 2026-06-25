@@ -865,11 +865,9 @@ Market* create_market(Barter_System** barter_system, Participant** participants)
 	return market;
 }
 
-Trade_Check* create_trade_check(Market** market) {
+Trade_Check* create_trade_check(Market* market) {
 
 	Trade_Check* trade_check = new Trade_Check();
-
-	trade_check->market = *market;
 
     trade_check->logic_l = simp_vector_create(16);
     trade_check->logic_r = simp_vector_create(16);
@@ -898,12 +896,12 @@ Trade_Check* create_trade_check(Market** market) {
     __int64 insurance_policies_applied_ix = 0;
     __int64 insurance_policies_accepted_ix = 0;
 
-    for (__int64 i = 0; i <= trade_check->market->barter_system->offers_vtop + 1; i++) {
+    for (__int64 i = 0; i <= market->barter_system->offers_vtop + 1; i++) {
 
         offers_ix = logic_ix;
         logic_ix++;
 
-        for (__int64 j = 0; j <= trade_check->market->barter_system->offers->give_vtop + 1; i++) {
+        for (__int64 j = 0; j <= market->barter_system->offers->give_vtop + 1; i++) {
 
             vouchers_ix = logic_ix;
             logic_ix++;
@@ -918,7 +916,7 @@ Trade_Check* create_trade_check(Market** market) {
 
         }
 
-        for (__int64 j = 0; j <= trade_check->market->barter_system->offers->receive_vtop + 1; i++) {
+        for (__int64 j = 0; j <= market->barter_system->offers->receive_vtop + 1; i++) {
 
             vouchers_ix = logic_ix;
             logic_ix++;
@@ -932,7 +930,7 @@ Trade_Check* create_trade_check(Market** market) {
 
         }
 
-        for (__int64 i = 0; i <= trade_check->market->barter_system->offers->requires_vtop + 1; i++) {
+        for (__int64 i = 0; i <= market->barter_system->offers->requires_vtop + 1; i++) {
 
             require_ix = logic_ix;
             logic_ix++;
@@ -942,7 +940,7 @@ Trade_Check* create_trade_check(Market** market) {
 
         }
 
-        for (__int64 i = 0; i <= trade_check->market->barter_system->offers->bans_vtop + 1; i++) {
+        for (__int64 i = 0; i <= market->barter_system->offers->bans_vtop + 1; i++) {
 
             participants_ix = logic_ix;
             logic_ix++;
@@ -954,7 +952,7 @@ Trade_Check* create_trade_check(Market** market) {
 
         }
 
-        for (__int64 i = 0; i <= trade_check->market->barter_system->offers->insurance_policies_required_vtop + 1; i++) {
+        for (__int64 i = 0; i <= market->barter_system->offers->insurance_policies_required_vtop + 1; i++) {
 
             insurance_policies_ix = logic_ix;
             logic_ix++;
@@ -965,7 +963,7 @@ Trade_Check* create_trade_check(Market** market) {
 
         }
 
-        for (__int64 i = 0; i <= trade_check->market->barter_system->offers->insurance_policies_applied_vtop + 1; i++) {
+        for (__int64 i = 0; i <= market->barter_system->offers->insurance_policies_applied_vtop + 1; i++) {
 
             insurance_policies_ix = logic_ix;
             logic_ix++;
@@ -976,7 +974,7 @@ Trade_Check* create_trade_check(Market** market) {
 
         }
 
-        for (__int64 i = 0; i <= trade_check->market->barter_system->offers->insurance_policies_accepted_vtop + 1; i++) {
+        for (__int64 i = 0; i <= market->barter_system->offers->insurance_policies_accepted_vtop + 1; i++) {
 
             insurance_policies_ix = logic_ix;
             logic_ix++;
@@ -992,12 +990,12 @@ Trade_Check* create_trade_check(Market** market) {
 
     }
 
-    for (__int64 i = 0; i <= trade_check->market->participants_vtop + 1; i++) {
+    for (__int64 i = 0; i <= market->participants_vtop + 1; i++) {
         
         participants_ix = logic_ix;
         logic_ix++;
 
-        for (__int64 i = 0; i <= trade_check->market->participants->requires_vtop + 1; i++) {
+        for (__int64 i = 0; i <= market->participants->requires_vtop + 1; i++) {
 
             requires_ix = logic_ix;
             logic_ix++;
@@ -1008,7 +1006,7 @@ Trade_Check* create_trade_check(Market** market) {
 
         }
 
-        for (__int64 i = 0; i <= trade_check->market->participants->bans_vtop + 1; i++) {
+        for (__int64 i = 0; i <= market->participants->bans_vtop + 1; i++) {
 
             bans_ix = logic_ix;
             logic_ix++;

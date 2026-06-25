@@ -343,8 +343,6 @@ typedef struct Market_tag {
 
 typedef struct Trade_Check_tag {
 
-	Market* market;
-
 	__int64* lst_l;
 	__int64* lst_r;
 
