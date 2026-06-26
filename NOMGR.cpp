@@ -549,17 +549,17 @@ Simp_Queue* simp_queue_dequeue(Simp_Queue* queu, std::vector<std::thread> thread
 	
 }
 
-void make_offer(Market* market, __int64 participant_id, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+void make_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, __int64* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, give_voucher_counts_vcap, __int64* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
     __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
     __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
-    __int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
-    __int64* require, __int64 require_vtop, __int64 require_vcap, __int64* ban, __int64 ban_vtop, __int64 ban_vcap) {
+    __int64* participants_require, __int64 participants_require_vtop, __int64 participants_require_vcap, __int64* participants_ban, __int64 participants_ban_vtop, __int64 participants_ban_vcap,
+    __int64* require, __int64 require_vtop, __int64 require_vcap, __int64* bans, __int64 bans_vtop, __int64 bans_vcap) {
 
-	Offer* offer = create_offer(retrieve_offer_id(market->id_pool), give, give_vtop, give_vcap, give_voucher_counts, give_voucher_counts_vtop, give_voucher_counts_vcap, receive, receive_vtop, receive_vcap, receive_voucher_counts, receive_voucher_counts_vtop, receive_voucher_counts_vcap,
+	Offer* offer = create_offer(market, participants_offering, participants_offering_vtop, participants_offering_vcap, give, give_vtop, give_vcap, give_voucher_counts, give_voucher_counts_vtop, give_voucher_counts_vcap, receive, receive_vtop, receive_vcap, receive_voucher_counts, receive_voucher_counts_vtop, receive_voucher_counts_vcap,
         valid_start, valid_end, subscription_interval, interval_type, intervals,
         insurance_policies_accepted, insurance_policies_accepted_vtop, insurance_policies_accepted_vcap, insurance_policies_applied, insurance_policies_applied_vtop, insurance_policies_applied_vcap,
-        participant_exclude, participant_exclude_vtop, participant_exclude_vcap, participant_require, participant_require_vtop, participant_require_vcap, participant_ban, participant_ban_vtop, participant_ban_vcap,
-        require, require_vtop, require_vcap, ban, ban_vtop, ban_vcap);
+        participants_require, participants_require_vtop, participants_require_vcap, participants_ban, participants_ban_vtop, participants_ban_vcap,
+        require, require_vtop, require_vcap, bans, bans_vtop, bans_vcap);
 
 	__int64 participant_ix = 0;
 	for (__int64 i = 0; i <= market->participants_vtop; i++) {
@@ -798,18 +798,21 @@ void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
 
 }
 
-Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+Offer* create_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, __int64* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, give_voucher_counts_vcap, __int64* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
     __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
     __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
-    __int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
-    __int64* require, __int64 require_vtop, __int64 require_vcap, __int64* ban, __int64 ban_vtop, __int64 ban_vcap) {
+    __int64* participants_require, __int64 participants_require_vtop, __int64 participants_require_vcap, __int64* participants_ban, __int64 participants_ban_vtop, __int64 participants_ban_vcap,
+    __int64* require, __int64 require_vtop, __int64 require_vcap, __int64* bans, __int64 bans_vtop, __int64 bans_vcap) {
 
     Offer* offer = new Offer();
 
-    offer->gives = new Voucher[give_vtop+1];
-    offer->gives_voucher_counts = new __int64[16];
-    offer->receives = new Voucher[16];
-    offer->receives_voucher_counts[16];
+	offer->id = retrieve_offer_id(market->id_pool);
+
+    offer->participants_offering = simp_vector_create(participants_offering_vtop + 1);
+    offer->gives = simp_vector_create(give_vtop+1);
+    offer->gives_voucher_counts = simp_vector_create(16);
+    offer->receives = simp_vector_create(16);
+    offer->receives_voucher_counts = simp_vector_create(16);
     offer->gives_gold_microgram_value = 0;
     offer->receives_gold_microgram_value = 0;
     offer->valid_start = 0;
@@ -817,21 +820,39 @@ Offer* create_offer(__int64 id, Voucher* give, __int64 give_vtop, __int64 give_v
 	offer->subscription_interval = 0;
 	offer->interval_type = 0;
     offer->intervals = 0;
-	offer->insurance_policies_accepted = new __int64[16];
-	offer->insurance_policies_applied = new __int64[16];
+	offer->insurance_policies_accepted = simp_vector_create(16);
+	offer->insurance_policies_applied = simp_vector_create(16);
+    offer->participants_require = simp_vector_create(16);
+    offer->participants_ban = simp_vector_create(16);
+    offer->require = simp_vector_create(16);
+    offer->bans = simp_vector_create(16);
 
-    offer->gives_vtop = give_vtop;
-    offer->gives_vcap = give_vcap;
-    offer->gives_voucher_counts_vtop = give_voucher_counts_vtop;
-    offer->gives_voucher_counts_vcap = give_voucher_counts_vcap;
-    offer->receives_vtop = receive_vtop;
-    offer->receives_vcap = receive_vcap;
-    offer->receive_voucher_counts_vtop = receive_voucher_counts_vtop;
-    offer->receive_voucher_counts_vcap = receive_voucher_counts_vcap;
-    offer->insurance_policies_accepted_vtop = insurance_policies_accepted_vtop;
-    offer->insurance_policies_accepted_vcap = insurance_policies_accepted_vcap;
-    offer->insurance_policies_applied_vtop = insurance_policies_applied_vtop;
-    offer->insurance_policies_applied_vcap = insurance_policies_applied_vcap;
+    offer->participants_offering_vtop = -1;
+    offer->participants_offering_vcap = 16;
+    offer->gives_vtop = -1;
+    offer->gives_vcap = 16;
+    offer->gives_voucher_counts_vtop = -1;
+    offer->gives_voucher_counts_vcap = 16;
+    offer->receives_vtop = -1;
+    offer->receives_vcap = 16;
+    offer->receive_voucher_counts_vtop = -1;
+    offer->receive_voucher_counts_vcap = 16;
+    offer->insurance_policies_accepted_vtop = -1;
+    offer->insurance_policies_accepted_vcap = 16;
+    offer->insurance_policies_applied_vtop = -1;
+    offer->insurance_policies_applied_vcap = 16;
+    offer->participants_require_vtop = -1;
+    offer->participants_require_vcap = 16;
+    offer->participants_ban_vtop = -1;
+    offer->participants_ban_vcap = 16;
+    offer->require_vtop = -1;
+    offer->require_vcap = 16;
+    offer->bans_vtop = -1;
+    offer->bans_vcap = 16;
+
+	for (__int64 i = 0; i <= participants_offering_vtop + 1; i++)
+		simp_participant_vector_append(&(offer->participants_offering), &participants_offering_vtop, &participants_offering_vcap), simp_participant_vector_read(offer->participants_offering, participants_offering_vtop, participants_offering_vcap, i));
+
 
 	for (__int64 i = 0; i <= give_vtop + 1; i++) { {
             
@@ -1188,6 +1209,14 @@ Trade_Check* create_trade_check(Market* market) {
 
 	Trade_Check* trade_check = new Trade_Check();
 
+    trade_check->vocabumalary_tracker_class = simp_vector_create(16);
+    trade_check->vocabumalary_tracker_id = simp_vector_create(16);
+
+    trade_check->vocabumalary_tracker_class_vtop = -1;
+    trade_check->vocabumalary_tracker_class_vcap = 16;
+    trade_check->vocabumalary_tracker_id_vtop = -1;
+    trade_check->vocabumalary_tracker_id_vcap = 16;
+
     trade_check->lst_l = simp_vector_create(16);
     trade_check->lst_r = simp_vector_create(16);
 
@@ -1232,6 +1261,8 @@ Trade_Check* create_trade_check(Market* market) {
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offers_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), banks_gives_ix);
 
+			simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 2);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), offers_ix);
 
         }
 
@@ -1247,6 +1278,9 @@ Trade_Check* create_trade_check(Market* market) {
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offers_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), banks_receives_ix);
 
+            simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 2);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), offers_ix);
+
         }
 
         for (__int64 j = 0; j <= market->barter_system->offers[i]->require_vtop + 1; j++) {
@@ -1256,6 +1290,9 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), require_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), FALSE_2SAT);
+
+            simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 1);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), require_ix);
 
         }
 
@@ -1267,6 +1304,9 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -offers_ix);
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -participants_bans_ix);
+
+            simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 1);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), participants_bans_ix);
             
 
         }
@@ -1280,6 +1320,9 @@ Trade_Check* create_trade_check(Market* market) {
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offers_ix);
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -insurance_policies_required_ix);
 
+            simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 3);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), insurance_policies_required_ix);
+
         }
 
         for (__int64 j = 0; i <= market->barter_system->offers[i]->insurance_policies_applied_vtop + 1; j++) {
@@ -1290,6 +1333,9 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offers_ix);
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -insurance_policies_applied_ix);
+
+            simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 3);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), insurance_policies_applied_ix);
 
         }
 
@@ -1304,6 +1350,9 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offers_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), insurance_policies_accepted_ix);
+
+            simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 3);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), insurance_policies_accepted_ix);
 
         }
 
@@ -1323,6 +1372,9 @@ Trade_Check* create_trade_check(Market* market) {
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), participants_ix);
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -participants_require_ix);
 
+            simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 0);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), participants_requires_ix);
+
         }
 
         for (__int64 j = 0; j <= market->participants[i]->bans_vtop + 1; j++) {
@@ -1333,6 +1385,9 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), bans_ix);
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -participants_bans_ix);
+
+            simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), 0);
+            simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), participants_bans_ix);
 
         }
 
