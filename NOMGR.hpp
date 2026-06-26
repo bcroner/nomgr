@@ -158,6 +158,24 @@ typedef struct Bank_tag {
 
 } Bank;
 
+enum economic_action {
+	exchange_give, exchange_receive, accept_insurance_policy, apply_insurance_policy, require_insurance_policy, require_participant, ban_participant, require_offer, ban_offer
+};
+
+/*
+
+0 exchange_give
+1 exchange_receive
+2 accept_insurance_policy
+3 apply_insurance_policy
+4 require_insurance_policy
+5 require_participant
+6 ban_participant
+7 require_offer
+8 ban_offer
+
+*/
+
 typedef struct Offer_tag {
 
 	__int64 id;
