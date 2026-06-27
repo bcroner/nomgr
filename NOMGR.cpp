@@ -1225,9 +1225,6 @@ Trade_Check* create_trade_check(Market* market) {
     trade_check->lst_l_vtop = -1;
     trade_check->lst_r_vcap = 16;
 
-    __int64 lst_ix = 2;
-    __int64 offer_ix = 0;
-
 	for (__int64 i = 0; i <= market->barter_system->offers_vtop + 1; i++) {
 
         __int64 offer = simp_vector_read(&(market->barter_system->offers), &(market->barter_system->offers_vtop), (market->barter_system->offers_vcap), i);
@@ -1238,11 +1235,9 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offer_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -give);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offer_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), give);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), exchange_give);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), give);
@@ -1255,11 +1250,9 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offers_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -receive);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offers_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), receive);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), exchange_receive);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), receive);
@@ -1272,7 +1265,6 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), require);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), FALSE_2SAT);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), require_offer);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), require);
@@ -1285,7 +1277,6 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), ban);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), FALSE_2SAT);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), ban_offer);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), ban);
@@ -1297,7 +1288,6 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offer_ix);
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), require);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), require_insurance_policy);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), require);
@@ -1310,7 +1300,6 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offer_ix);
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -applied);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), apply_insurance_policy);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), applied);
@@ -1323,11 +1312,9 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offers_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -insurance_policies_accepted_ix);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offers_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), insurance_policies_accepted_ix);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), accept_insurance_policy);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), accepted);
@@ -1336,15 +1323,14 @@ Trade_Check* create_trade_check(Market* market) {
 
     for (__int64 i = 0; i <= market->participants_vtop + 1; i++) {
         
-		__int64 participant_ix = simp_vector_read(&(market->participants), &(market->participants_vtop), &(market->participants_vcap), i);
+		__int64 participant = simp_vector_read(&(market->participants), &(market->participants_vtop), &(market->participants_vcap), i);
 
         for (__int64 j = 0; j <= market->participants[i]->require_vtop + 1; j++) {
 
 			__int64 require = simple_vector_read(&(market->participants[i]->require), &(market->participants[i]->require_vtop), &(market->participants[i]->require_vcap), j);
 
-            simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), participant_ix);
+            simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), participant);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -require);
-            lst_ix++;
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), require_participant);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), participant);
@@ -1355,9 +1341,8 @@ Trade_Check* create_trade_check(Market* market) {
 
             __int64 ban = simple_vector_read(&(market->participants[i]->bans), &(market->participants[i]->bans_vtop), &(market->participants[i]->bans_vcap), j);
 
-            simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -participant_ix);
-            simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -ban);
-            lst_ix++;
+            simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -participant);
+            simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -ban)
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), ban_participant);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), ban);
