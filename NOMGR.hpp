@@ -13,6 +13,9 @@ typedef struct ID_Pool_tag {
 	__int64* bills;
 	__int64* laws;
 	__int64* gold_deposits;
+	__int64* gold_milligrams;
+	__int64* gold_deposit_match;
+	__int64* gold_milligram_match;
 	__int64* participants;
 
 	__int64 vouchers_vtop;
@@ -29,6 +32,12 @@ typedef struct ID_Pool_tag {
 	__int64 laws_vcap;
 	__int64 gold_deposits_vtop;
 	__int64 gold_deposits_vcap;
+	__int64 gold_milligrams_vtop;
+	__int64 gold_milligrams_vcap;
+	__int64 gold_deposit_match_vtop;
+	__int64 gold_deposit_match_vcap;
+	__int64 gold_milligram_match_vtop;
+	__int64 gold_milligram_match_vcap;
 	__int64 participants_vtop;
 	__int64 participants_vcap;
 
@@ -101,7 +110,7 @@ typedef struct Voucher_tag {
 	__int64 subscription_interval;
 	__int64 interval_type;
 	__int64 intervals;
-	__int64 gold_microgram_value;
+	__int64 gold_milligram_value;
 
 	__int64 title_vtop;
 	__int64 title_vcap;
@@ -127,7 +136,7 @@ typedef struct Voucher_System_tag {
 typedef struct Account_tag {
 
 	__int64 id;
-	__int64 gold_microgram_balance;
+	__int64 gold_milligram_balance;
 	__int64* holdings;
 	__int64* voucher_counts;
 	__int64 vouchers_vtop;
@@ -182,11 +191,13 @@ typedef struct Offer_tag {
 
 	__int64* participants_offering;
 	__int64* gives;
+	vocabumalary* gives_classifications;
 	__int64* gives_voucher_counts;
 	__int64* receives;
+	vocabumalary* receives_classifications;
 	__int64* receives_voucher_counts;
-	__int64 gives_gold_microgram_value;
-	__int64 receives_gold_microgram_value;
+	__int64 gives_gold_milligram_value;
+	__int64 receives_gold_milligram_value;
 	__int64 valid_start;
 	__int64 valid_end;
 	__int64 subscription_interval;
@@ -204,10 +215,14 @@ typedef struct Offer_tag {
 	__int64 participants_offering_vcap;
 	__int64 gives_vtop;
 	__int64 gives_vcap;
+	__int64 gives_classifications_vtop;
+	__int64 gives_classifications_vcap;
 	__int64 gives_voucher_counts_vtop;
 	__int64 gives_voucher_counts_vcap;
 	__int64 receives_vtop;
 	__int64 receives_vcap;
+	__int64 receives_classifications_vtop;
+	__int64 receives_classifications_vcap;
 	__int64 receive_voucher_counts_vtop;
 	__int64 receive_voucher_counts_vcap;
 	__int64 insurance_policies_accepted_vtop;
@@ -257,8 +272,8 @@ typedef struct Article_V_Option_tag {
 	__int64* for_voucher_counts;
 	__int64* vouchers_against;
 	__int64* against_voucher_counts;
-	__int64 gold_microgram_value_for;
-	__int64 gold_microgram_value_against;
+	__int64 gold_milligram_value_for;
+	__int64 gold_milligram_value_against;
 
 	__int64 source_vtop;
 	__int64 source_vcap;
@@ -293,8 +308,8 @@ typedef struct Article_V_Convention_tag {
 	__int64* for_voucher_counts;
 	__int64* vouchers_against;
 	__int64* against_voucher_counts;
-	__int64 gold_microgram_value_for;
-	__int64 gold_microgram_value_against;
+	__int64 gold_milligram_value_for;
+	__int64 gold_milligram_value_against;
 
 	__int64 options_vtop;
 	__int64 options_vcap;
@@ -326,8 +341,8 @@ typedef struct Rollback_Article_V_Convention_tag {
 	__int64* for_voucher_counts;
 	__int64* vouchers_against;
 	__int64* aagainst_voucher_counts;
-	__int64 gold_microgram_value_for;
-	__int64 gold_microgram_value_against;
+	__int64 gold_milligram_value_for;
+	__int64 gold_milligram_value_against;
 
 	__int64 source_vtop;
 	__int64 source_vcap;
@@ -372,8 +387,8 @@ typedef struct Bill_tag {
 	__int64* for_voucher_counts;
 	__int64* vouchers_against;
 	__int64* against_voucher_counts;
-	__int64 gold_microgram_value_for;
-	__int64 gold_microgram_value_against;
+	__int64 gold_milligram_value_for;
+	__int64 gold_milligram_value_against;
 
 	__int64 title_vtop;
 	__int64 title_vcap;
@@ -454,7 +469,7 @@ typedef struct Gold_Deposit_tag {
 
 	__int64 id;
 	__int64 deposit_date;
-	__int64 gold_microgram_value;
+	__int64 gold_milligram_value;
 
 } Gold_Deposit;
 
@@ -637,7 +652,7 @@ __int64 retrieve_participant_id(ID_Pool* id_pool);
 void submit_participant_id(ID_Pool* id_pool, __int64 id);
 Offer** create_offers();
 Participant* create_participant(Market* market);
-Account* create_account(Market* market, __int64 gold_microgram_balance, Voucher* vouchers, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap);
+Account* create_account(Market* market, __int64 gold_milligram_balance, Voucher* vouchers, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap);
 Bank* create_bank(Market* market, __int64* accounts, __int64* account_holders, __int64 accounts_vtop, __int64 accounts_vcap, __int64 account_holders_vtop, __int64 account_holders_vcap);
 Barter_System* create_barter_system();
 Market* create_market();

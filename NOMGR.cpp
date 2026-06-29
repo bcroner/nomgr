@@ -813,8 +813,8 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
     offer->gives_voucher_counts = simp_vector_create(16);
     offer->receives = simp_vector_create(16);
     offer->receives_voucher_counts = simp_vector_create(16);
-    offer->gives_gold_microgram_value = 0;
-    offer->receives_gold_microgram_value = 0;
+    offer->gives_gold_milligram_value = 0;
+    offer->receives_gold_milligram_value = 0;
     offer->valid_start = 0;
     offer->valid_end = 0;
 	offer->subscription_interval = 0;
@@ -879,10 +879,10 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
         offer->interval_type = give[i].interval_type;
         offer->intervals = give[i].intervals;
 
-        offer->gives_gold_microgram_value = 0;
+        offer->gives_gold_milligram_value = 0;
 
 		for (__int64 j = 0; j <= give_voucher_counts_vtop + 1; j++)
-            offer->gives_gold_microgram_value += give->gold_microgram_value;
+            offer->gives_gold_milligram_value += give->gold_milligram_value;
 	}
 
     for (__int64 i = 0; i <= receive_vtop + 1; i++) {
@@ -910,10 +910,10 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
         offer->interval_type = receive[i].interval_type;
         offer->intervals = receive[i].intervals;
 
-        offer->receives_gold_microgram_value = 0;
+        offer->receives_gold_milligram_value = 0;
 
         for (__int64 j = 0; j <= receive_voucher_counts_vtop + 1; j++)
-            offer->receives_gold_microgram_value += receive->gold_microgram_value;
+            offer->receives_gold_milligram_value += receive->gold_milligram_value;
     }
 
     offer->valid_start = give[0].valid_start;
@@ -1072,6 +1072,30 @@ void submit_gold_deposit_id(ID_Pool* id_pool, __int64 id) {
     id_pool_submit(id_pool->gold_deposits, &(id_pool->gold_deposits), &(id_pool->gold_deposits), id);
 }
 
+__int64 retrieve_gold_milligrams_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->gold_milligramss, &(id_pool->gold_milligramss_vtop), &(id_pool->gold_milligramss_vcap));
+}
+
+void submit_gold_milligrams_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->gold_milligramss, &(id_pool->gold_milligramss), &(id_pool->gold_milligramss), id);
+}
+
+__int64 retrieve_gold_deposit_match_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->gold_deposit_matchs, &(id_pool->gold_deposit_matchs_vtop), &(id_pool->gold_deposit_matchs_vcap));
+}
+
+void submit_gold_deposit_match_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->gold_deposit_matchs, &(id_pool->gold_deposit_matchs), &(id_pool->gold_deposit_matchs), id);
+}
+
+__int64 retrieve_gold_milligram_match_id(ID_Pool* id_pool) {
+    return id_pool_retrieve(id_pool->gold_milligram_matchs, &(id_pool->gold_milligram_matchs_vtop), &(id_pool->gold_milligram_matchs_vcap));
+}
+
+void submit_gold_milligram_match_id(ID_Pool* id_pool, __int64 id) {
+    id_pool_submit(id_pool->gold_milligram_matchs, &(id_pool->gold_milligram_matchs), &(id_pool->gold_milligram_matchs), id);
+}
+
 __int64 retrieve_participant_id(ID_Pool* id_pool) {
     return id_pool_retrieve(id_pool->participants, &(id_pool->participants_vtop), &(id_pool->participants_vcap));
 }
@@ -1091,6 +1115,9 @@ ID_Pool* create_id_pool() {
     id_pool->bills = simp_vector_create(16);
     id_pool->laws = simp_vector_create(16);
     id_pool->gold_deposits = simp_vector_create(16);
+    id_pool->gold_milligrams = simp_vector_create(16);
+    id_pool->gold_deposit_match = simp_vactor_create(16);
+    id_pool->gold_milligram_match = simp_vactor_create(16);
     id_pool->participants = simp_vector_create(16);
 
     id_pool->banks_vtop = -1;
@@ -1107,6 +1134,12 @@ ID_Pool* create_id_pool() {
     id_pool->laws_vcap = 16;
     id_pool->gold_deposits_vtop = -1;
     id_pool->gold_deposits_vcap = 16;
+    id_pool->gold_milligrams_vtop = -1;
+    id_pool->gold_milligrams_vcap = 16;
+    id_pool->gold_deposit_match_vtop = -1;
+    id_pool->gold_deposit_match_vcap = 16;
+    id_pool->gold_milligram_match_vtop = -1;
+    id_pool->gold_milligram_match_vcap = 16;
     id_pool->participants_vtop = -1;
     id_pool->participants_vcap = 16;
 
@@ -1128,13 +1161,13 @@ Participant* create_participant(Market* market) {
 	return participant;
 }
 
-Account* create_account(Market* market, __int64 gold_microgram_balance, Voucher* vouchers, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap) {
+Account* create_account(Market* market, __int64 gold_milligram_balance, Voucher* vouchers, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap) {
 
     Account* account = new Account();
 
     account->id = retrieve_account_id(market->id_pool);
 
-    account->gold_microgram_balance = gold_microgram_balance;
+    account->gold_milligram_balance = gold_milligram_balance;
     account->vouchers = vouchers;
     account->voucher_counts = voucher_counts;
     account->vouchers_vtop = vouchers_vtop;
@@ -1225,6 +1258,8 @@ Trade_Check* create_trade_check(Market* market) {
     trade_check->lst_l_vtop = -1;
     trade_check->lst_r_vcap = 16;
 
+    __int64 gold_milligram_ix = 0;
+
 	for (__int64 i = 0; i <= market->barter_system->offers_vtop + 1; i++) {
 
         __int64 offer = simp_vector_read(&(market->barter_system->offers), &(market->barter_system->offers_vtop), (market->barter_system->offers_vcap), i);
@@ -1238,6 +1273,20 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offer_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), give);
+
+            if (market->barter_system->offers_gives_classifications == gold)
+                for (__int64 k = 0; k < offer->gold_microgram_value; k++) {
+
+                    __int64 gold_milligram_id = retrieve_gold_milligram(market->id_pool, gold_milligram_ix);
+                    gold_milligram_ix++;
+
+                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), give);
+                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -gold_milligram_ix);
+
+                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -give);
+                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), gold_milligram_ix);
+
+                }
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), exchange_give);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), give);
@@ -1253,6 +1302,20 @@ Trade_Check* create_trade_check(Market* market) {
 
             simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offers_ix);
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), receive);
+
+            if (market->barter_system->offers_receives_classifications == gold)
+                for (__int64 k = 0; k < offer->gold_microgram_value; k++) {
+
+                    __int64 gold_milligram_id = retrieve_gold_milligram(market->id_pool, gold_milligram_ix);
+                    gold_milligram_ix++;
+
+                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), receive);
+                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -gold_milligram_ix);
+
+                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -receive);
+                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), gold_milligram_ix);
+
+                }
 
             simp_vector_append(&(trade_check->vocabumalary_tracker_class), &(trade_check->vocabumalary_tracker_class_vtop), &(trade_check->vocabumalary_tracker_class_vcap), exchange_receive);
             simp_vector_append(&(trade_check->vocabumalary_tracker_id), &(trade_check->vocabumalary_tracker_id_vtop), &(trade_check->vocabumalary_tracker_id_vcap), receive);
