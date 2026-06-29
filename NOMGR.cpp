@@ -1275,10 +1275,16 @@ Trade_Check* create_trade_check(Market* market) {
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), give);
 
             if (market->barter_system->offers_gives_classifications == gold)
-                for (__int64 k = 0; k < offer->gold_microgram_value; k++) {
+                for (__int64 k = 0; k <= offer->gives_vtop + 1; k++) {
 
                     __int64 gold_milligram_id = retrieve_gold_milligram(market->id_pool, gold_milligram_ix);
                     gold_milligram_ix++;
+
+                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offer);
+                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -give);
+
+                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offer);
+                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), give);
 
                     simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), give);
                     simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -gold_milligram_ix);
@@ -1304,16 +1310,13 @@ Trade_Check* create_trade_check(Market* market) {
             simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), receive);
 
             if (market->barter_system->offers_receives_classifications == gold)
-                for (__int64 k = 0; k < offer->gold_microgram_value; k++) {
+                for (__int64 k = 0; k <= offer->receives_vtop+1; k++) {
 
-                    __int64 gold_milligram_id = retrieve_gold_milligram(market->id_pool, gold_milligram_ix);
-                    gold_milligram_ix++;
+                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), offer);
+                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -receive);
 
-                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), receive);
-                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), -gold_milligram_ix);
-
-                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -receive);
-                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), gold_milligram_ix);
+                    simp_vector_append(&(trade_check->lst_l), &(trade_check->lst_l_vtop), &(trade_check->lst_l_vcap), -offer);
+                    simp_vector_append(&(trade_check->lst_r), &(trade_check->lst_r_vtop), &(trade_check->lst_r_vcap), receive);
 
                 }
 
