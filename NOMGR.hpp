@@ -235,15 +235,6 @@ typedef struct Barter_System_tag {
 
 } Barter_System;
 
-typedef struct Offer_Triggered_Trade_Queue_tag {
-
-	__int64* offers;
-
-	__int64 offers_vtop;
-	__int64 offers_vcap;
-	
-} Offer_Triggered_Trade_Queue;
-
 typedef struct Article_V_Option_tag {
 
 	char* source;
@@ -528,7 +519,7 @@ typedef struct System_tag {
 
 typedef struct Simp_Queue_tag {
 
-	__int64 data;
+	Trade_Check* data;
 
 	Simp_Queue_tag* next;
 
@@ -552,14 +543,14 @@ typedef struct SATSolver_tag {
 	bool* is_f;
 	bool* is_t;
 
-	__int64* lst_l_parm_vtop;
-	__int64* lst_l_parm_vcap;
-	__int64* lst_r_parm_vtop;
-	__int64* lst_r_parm_vcap;
-	__int64* is_f_vtop;
-	__int64* is_f_vcap;
-	__int64* is_t_vtop;
-	__int64* is_t_vcap;
+	__int64 lst_l_parm_vtop;
+	__int64 lst_l_parm_vcap;
+	__int64 lst_r_parm_vtop;
+	__int64 lst_r_parm_vcap;
+	__int64 is_f_vtop;
+	__int64 is_f_vcap;
+	__int64 is_t_vtop;
+	__int64 is_t_vcap;
 
 } SATSolver;
 
@@ -643,7 +634,7 @@ Market* create_market();
 ID_Pool* create_id_pool();
 System* create_system();
 Trade_Check* create_trade_check(Market* market);
-bool check_trade(SATSolver* s, Trade_Check* trade_check);
+bool check_trade(SATSolver* s, Trade_Check* trade_check, bool repeat);
 bool* SATSolver_create_boundary(bool begin, __int64 chop, __int64 offs, __int64 n, __int64 leading_trues);
 void SATSolver_create(SATSolver*** s, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm);
 void SATSolver_destroy(SATSolver*** s);

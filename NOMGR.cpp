@@ -406,86 +406,39 @@ void simp_vector_append(__int64** v, __int64* vtop, __int64* vcap, __int64 data)
 std::atomic_flag lock_flag = ATOMIC_FLAG_INIT;
 
 
-void enqueue(Simp_Queue* queue, Simp_Queue* parm) {
+void simp_queue_enqueue(Simp_Queue* queue, Simp_Queue* parm) {
 	Simp_Queue* temp = queue->next;
 	queue->next = parm;
 	parm->next = temp;
 }
 
-void simp_queue_enqueue(Simp_Queue* queue, Simp_Queue* parm, std::vector<std::thread> threads) {
+Simp_Queue * simp_queue_dequeue(Simp_Queue* queue) {
 
-    // 1. Initialize variables & atomic flag for single thread restriction
-    std::atomic_flag single_thread_lock = ATOMIC_FLAG_INIT;
-    int data_to_compute = 100;
-
-    // Local variable of a pointer to a struct
-    RecursiveStruct* local_ptr = new RecursiveStruct{ 5, nullptr };
-
-    // 2. Define the work function 
-    // Capturing local_ptr (by copy or reference, here 'this' or '=' is used per spec)
-    auto work_function = [local_ptr](int multiplier) -> RecursiveStruct* {
-        std::cout << "Thread executing work function with local_ptr->value: "
-            << local_ptr->value << "\n";
-
-        // Return a pointer to a new struct based on arguments
-        return new RecursiveStruct{ data_to_compute * multiplier, local_ptr };
-        };
-
-    // 3. Setup a vector of threads
-    const int NUM_THREADS = 4;
-    std::vector<std::thread> threads;
-    std::vector<RecursiveStruct*> results(NUM_THREADS, nullptr);
-
-    // 4. Launch threads
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        threads.emplace_back([&single_thread_lock, &results, &work_function, i]() {
-
-            // Only allow a single thread to operate using an unconditional atomic test-and-set
-            if (!single_thread_lock.test_and_set(std::memory_order_acquire)) {
-
-                // This block is only executed by the FIRST thread that succeeds in setting the lock
-                results[i] = work_function(i + 1);
-
-                // Release the lock when done
-                single_thread_lock.clear(std::memory_order_release);
-            }
-            });
-    }
-
-    // 5. Join all threads
-    for (auto& t : threads) {
-        t.join();
-    }
-
-    // 6. Output the results (demonstrating only one thread executed the function)
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        if (results[i] != nullptr) {
-            std::cout << "Result from thread " << i << ": "
-                << results[i]->value << "\n";
-        }
-        else {
-            std::cout << "Thread " << i << " was locked out or yielded no result.\n";
-        }
-    }
-
-    // Clean up memory
-    delete local_ptr;
-    for (auto res : results) {
-        delete res;
-    }
-
-}
-
-Simp_Queue* dequeue(Simp_Queue* queue) {
-    if (queue->next == nullptr)
-        return nullptr;
+	Simp_Queue* prev = queue;
     Simp_Queue* ret = queue->next;
-    queue->next = ret->next;
-    ret->next = nullptr;
-    return ret;
-};
 
-Simp_Queue* simp_queue_dequeue(Simp_Queue* queue, std::vector<std::thread> threads) {
+    if (ret == nullptr)
+		return nullptr;
+
+    while (ret->next != nullptr){
+		prev = prev->next;
+        ret = ret->next;
+	}
+
+	prev->next = nullptr;
+
+	SATSolver* s = new SATSolver();
+	s->lst_l_parm = simp_vector_create(16);
+	s->lst_r_parm = simp_vector_create(16); 
+    s->lst_l_parm_vtop = -1;
+	s->lst_l_parm_vcap = 16;
+
+	bool is_sat = check_trade(s, ret->trade_check, true);
+
+    if (is_sat)
+        return ret;
+    else
+		return nullptr;
 
 }
 
@@ -1378,7 +1331,53 @@ System* create_system() {
 	return system;
 }
 
-bool check_trade(SATSolver* s, Trade_Check* trade_check) {
+void check_trade(SATSolver* s, Trade_Check* trade_check, bool repeat) {
+
+	s->k_parm = trade_check->lst_l_vtop + 1;
+
+	s->lst_l_parm = new __int64[s->k_parm];
+    s->lst_r_parm = new __int64[s->k_parm];
+
+    __int64* unique_checker = simp_vector_create(16);
+	__int64 unique_checker_vtop = -1;
+	__int64 unique_checker_vcap = 16;
+
+    for (__int64 i = 0; i < s->k_parm; i++) {
+
+        __int64 l_abs = trade_check->lst_l[i] < 0 ? -(trade_check->lst_l[i]) : trade_check->lst_l[i];
+        __int64 r_abs = trade_check->lst_r[i] < 0 ? -(trade_check->lst_r[i]) : trade_check->lst_r[i];
+
+		bool l_abs_found = false;
+		bool r_abs_found = false;
+
+        for (__int64 j = 0; j <= unique_checker_vtop + 1; j++) {
+
+            if (unique_checker[j] == l_abs)
+                l_abs_found = true;
+            if (unique_checker[j] == r_abs)
+                r_abs_found = true;
+
+            if (l_abs_found && r_abs_found)
+				break;
+		}
+		if (!l_abs_found)
+            simp_vector_append(&(unique_checker), &(unique_checker_vtop), &(unique_checker_vcap), l_abs);
+        if (!r_abs_found)
+            simp_vector_append(&(unique_checker), &(unique_checker_vtop), &(unique_checker_vcap), r_abs);
+	}
+
+	s->n_parm = unique_checker_vtop + 2; // from 2..n_parm to 2..n
+
+    s->is_f = new bool[s->n_parm];
+    s->is_t = new bool[s->n_parm];
+
+	s->Z = new bool[s->n_parm];
+
+    for (__int64 i = 0; i < s->k_parm; i++) {
+		s->lst_l_parm[i] = trade_check->lst_l[i];
+		s->lst_r_parm[i] = trade_check->lst_r[i];
+    }
+
 
     __int64* encoding = new __int64[s->n_parm]; // from 2..n_parm to 2..n
 
@@ -1498,7 +1497,17 @@ bool check_trade(SATSolver* s, Trade_Check* trade_check) {
 
     bool* sln = new bool[n];
 
-    return SATSolver_isSat(s, sln);
+    bool is_sat = SATSolver_isSat(s, sln);
+
+    if (is_sat) {
+
+		Simp_Queue* node = new Simp_Queue();
+        node->data = trade_check;
+
+		if (!repeat)
+            simp_queue_enqueue(trade_check);
+
+    }
 
 }
 
