@@ -1331,7 +1331,7 @@ System* create_system() {
 	return system;
 }
 
-void check_trade(SATSolver* s, Trade_Check* trade_check, bool repeat) {
+void check_trade(SATSolver* s, Trade_Check* trade_check, bool** sln, bool repeat) {
 
 	s->k_parm = trade_check->lst_l_vtop + 1;
 
@@ -1495,9 +1495,9 @@ void check_trade(SATSolver* s, Trade_Check* trade_check, bool repeat) {
     for (__int64 i = 0; i < search_sz; i++)
         SATSolver_create(&s, trade_check->lst_l, trade_check->lst_r, k, n);
 
-    bool* sln = new bool[n];
+	*sln = new bool[s->n_parm];
 
-    bool is_sat = SATSolver_isSat(s, sln);
+    bool is_sat = SATSolver_isSat(s, *sln);
 
     if (is_sat) {
 
