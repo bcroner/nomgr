@@ -485,68 +485,8 @@ Simp_Queue* dequeue(Simp_Queue* queue) {
     return ret;
 };
 
-Simp_Queue* simp_queue_dequeue(Simp_Queue* queu, std::vector<std::thread> threads) {
+Simp_Queue* simp_queue_dequeue(Simp_Queue* queue, std::vector<std::thread> threads) {
 
-    // 1. Initialize variables & atomic flag for single thread restriction
-    std::atomic_flag single_thread_lock = ATOMIC_FLAG_INIT;
-    int data_to_compute = 100;
-
-    // Local variable of a pointer to a struct
-    RecursiveStruct* local_ptr = new RecursiveStruct{ 5, nullptr };
-
-    // 2. Define the work function 
-    // Capturing local_ptr (by copy or reference, here 'this' or '=' is used per spec)
-    auto work_function = [local_ptr](int multiplier) -> RecursiveStruct* {
-        std::cout << "Thread executing work function with local_ptr->value: "
-            << local_ptr->value << "\n";
-
-        // Return a pointer to a new struct based on arguments
-        return new RecursiveStruct{ data_to_compute * multiplier, local_ptr };
-        };
-
-    // 3. Setup a vector of threads
-    const int NUM_THREADS = 4;
-    std::vector<std::thread> threads;
-    std::vector<RecursiveStruct*> results(NUM_THREADS, nullptr);
-
-    // 4. Launch threads
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        threads.emplace_back([&single_thread_lock, &results, &work_function, i]() {
-
-            // Only allow a single thread to operate using an unconditional atomic test-and-set
-            if (!single_thread_lock.test_and_set(std::memory_order_acquire)) {
-
-                // This block is only executed by the FIRST thread that succeeds in setting the lock
-                results[i] = work_function(i + 1);
-
-                // Release the lock when done
-                single_thread_lock.clear(std::memory_order_release);
-            }
-            });
-    }
-
-    // 5. Join all threads
-    for (auto& t : threads) {
-        t.join();
-    }
-
-    // 6. Output the results (demonstrating only one thread executed the function)
-    for (int i = 0; i < NUM_THREADS; ++i) {
-        if (results[i] != nullptr) {
-            std::cout << "Result from thread " << i << ": "
-                << results[i]->value << "\n";
-        }
-        else {
-            std::cout << "Thread " << i << " was locked out or yielded no result.\n";
-        }
-    }
-
-    // Clean up memory
-    delete local_ptr;
-    for (auto res : results) {
-        delete res;
-    }
-	
 }
 
 void make_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, __int64* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, give_voucher_counts_vcap, __int64* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
@@ -1017,131 +957,104 @@ void id_pool_submit(__int64* id_pool, __int64* id_pool_vtop, __int64* id_pool_vc
 }
 
 __int64 retrieve_voucher_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->vouchers, &(id_pool->vouchers_vtop), &(id_pool->vouchers_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_voucher_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->vouchers, &(id_pool->vouchers_vtop), &(id_pool->vouchers_vcap), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_account_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->accounts, &(id_pool->accounts_vtop), &(id_pool->accounts_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_account_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->accounts, &(id_pool->accounts_vtop), &(id_pool->accounts_vcap), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_bank_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->banks, &(id_pool->banks_vtop), &(id_pool->banks_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_bank_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->banks, &(id_pool->banks_vtop), &(id_pool->banks_vcap), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_offer_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->offers, &(id_pool->offers_vtop), &(id_pool->offers_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_offer_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->offers, &(id_pool->offers_vtop), &(id_pool->offers_vcap), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_bill_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->bills, &(id_pool->bills_vtop), &(id_pool->bills_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_bill_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->bills, &(id_pool->bills_vtop), &(id_pool->bills_vcap), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_law_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->laws, &(id_pool->laws_vtop), &(id_pool->laws_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_law_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->laws, &(id_pool->laws_vtop), &(id_pool->laws_vcap), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_gold_deposit_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->gold_deposits, &(id_pool->gold_deposits_vtop), &(id_pool->gold_deposits_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_gold_deposit_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->gold_deposits, &(id_pool->gold_deposits), &(id_pool->gold_deposits), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_gold_milligrams_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->gold_milligramss, &(id_pool->gold_milligramss_vtop), &(id_pool->gold_milligramss_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_gold_milligrams_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->gold_milligramss, &(id_pool->gold_milligramss), &(id_pool->gold_milligramss), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_gold_deposit_match_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->gold_deposit_matchs, &(id_pool->gold_deposit_matchs_vtop), &(id_pool->gold_deposit_matchs_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_gold_deposit_match_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->gold_deposit_matchs, &(id_pool->gold_deposit_matchs), &(id_pool->gold_deposit_matchs), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_gold_milligram_match_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->gold_milligram_matchs, &(id_pool->gold_milligram_matchs_vtop), &(id_pool->gold_milligram_matchs_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_gold_milligram_match_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->gold_milligram_matchs, &(id_pool->gold_milligram_matchs), &(id_pool->gold_milligram_matchs), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 __int64 retrieve_participant_id(ID_Pool* id_pool) {
-    return id_pool_retrieve(id_pool->participants, &(id_pool->participants_vtop), &(id_pool->participants_vcap));
+    return id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 }
 
 void submit_participant_id(ID_Pool* id_pool, __int64 id) {
-    id_pool_submit(id_pool->participants, &(id_pool->participants_vtop), &(id_pool->participants_vcap), id);
+    id_pool_submit(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap), id);
 }
 
 ID_Pool* create_id_pool() {
 
     ID_Pool* id_pool = new ID_Pool();
 
-    id_pool->banks = simp_vector_create(16);
-    id_pool->accounts = simp_vector_create(16);
-    id_pool->banks = simp_vector_create(16);
-    id_pool->offers = simp_vector_create(16);
-    id_pool->bills = simp_vector_create(16);
-    id_pool->laws = simp_vector_create(16);
-    id_pool->gold_deposits = simp_vector_create(16);
-    id_pool->gold_milligrams = simp_vector_create(16);
-    id_pool->gold_deposit_match = simp_vactor_create(16);
-    id_pool->gold_milligram_match = simp_vactor_create(16);
-    id_pool->participants = simp_vector_create(16);
+    id_pool->trade_entitiess = simp_vector_create(16);
+    
+    id_pool->trade_entities_vtop = -1;
+    id_pool->trade_entities_vcap = 16;
 
-    id_pool->banks_vtop = -1;
-    id_pool->banks_vcap = 16;
-    id_pool->accounts_vtop = -1;
-    id_pool->accounts_vcap = 16;
-    id_pool->banks_vtop = -1;
-    id_pool->banks_vcap = 16;
-    id_pool->offers_vtop = -1;
-    id_pool->offers_vcap = 16;
-    id_pool->bills_vtop = -1;
-    id_pool->bills_vcap = 16;
-    id_pool->laws_vtop = -1;
-    id_pool->laws_vcap = 16;
-    id_pool->gold_deposits_vtop = -1;
-    id_pool->gold_deposits_vcap = 16;
-    id_pool->gold_milligrams_vtop = -1;
-    id_pool->gold_milligrams_vcap = 16;
-    id_pool->gold_deposit_match_vtop = -1;
-    id_pool->gold_deposit_match_vcap = 16;
-    id_pool->gold_milligram_match_vtop = -1;
-    id_pool->gold_milligram_match_vcap = 16;
-    id_pool->participants_vtop = -1;
-    id_pool->participants_vcap = 16;
+	id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
+    id_pool_retrieve(id_pool->trade_entities, &(id_pool->trade_entities_vtop), &(id_pool->trade_entities_vcap));
 
     return id_pool;
 }

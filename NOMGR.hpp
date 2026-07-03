@@ -6,6 +6,7 @@
 
 typedef struct ID_Pool_tag {
 
+	/*
 	__int64* vouchers;
 	__int64* accounts;
 	__int64* banks;
@@ -17,29 +18,12 @@ typedef struct ID_Pool_tag {
 	__int64* gold_deposit_match;
 	__int64* gold_milligram_match;
 	__int64* participants;
+	*/
 
-	__int64 vouchers_vtop;
-	__int64 vouchers_vcap;
-	__int64 accounts_vtop;
-	__int64 accounts_vcap;
-	__int64 banks_vtop;
-	__int64 banks_vcap;
-	__int64 offers_vtop;
-	__int64 offers_vcap;
-	__int64 bills_vtop;
-	__int64 bills_vcap;
-	__int64 laws_vtop;
-	__int64 laws_vcap;
-	__int64 gold_deposits_vtop;
-	__int64 gold_deposits_vcap;
-	__int64 gold_milligrams_vtop;
-	__int64 gold_milligrams_vcap;
-	__int64 gold_deposit_match_vtop;
-	__int64 gold_deposit_match_vcap;
-	__int64 gold_milligram_match_vtop;
-	__int64 gold_milligram_match_vcap;
-	__int64 participants_vtop;
-	__int64 participants_vcap;
+	__int64* trade_entities;
+
+	__int64 trade_entities_vtop;
+	__int64 trade_entities_vcap;
 
 } ID_Pool;
 
