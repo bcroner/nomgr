@@ -1048,7 +1048,7 @@ ID_Pool* create_id_pool() {
 
     ID_Pool* id_pool = new ID_Pool();
 
-    id_pool->trade_entitiess = simp_vector_create(16);
+    id_pool->trade_entities = simp_vector_create(16);
     
     id_pool->trade_entities_vtop = -1;
     id_pool->trade_entities_vcap = 16;
