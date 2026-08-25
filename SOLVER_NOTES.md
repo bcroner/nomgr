@@ -563,3 +563,95 @@ highest blended score wins.
 fields (`vouchers_for`, `for_voucher_counts`) are still unused. The voucher
 fields suggest a third weighting dimension alongside heads and gold; that needs
 a decision about what a voucher is worth in a vote before it can be written.
+
+---
+
+# Producer-backed votes and the government fund
+
+A vote has two constituencies: everyone who turns up, and producers who back
+their vote by **committing vouchers**. Both must clear their own bar -- one
+chamber cannot carry a measure over the other's objection.
+
+Committing is not a signal. If the measure passes the vouchers are collected
+into a government fund, from **both** sides, since everyone who staked
+resources on the question staked them. Backing a vote with resources costs you
+exactly when you win, which is what stops resource voting from being free.
+
+How much committed value counts inside the producer chamber is set by the
+democratic side -- the people choose how much weight production carries:
+
+```
+    committed-value share | producer chamber
+             0.0          |  carries      one producer one vote
+             0.3          |  carries
+             0.4          |  refuses      <-- flips here
+             1.0          |  refuses      decided purely by value staked
+```
+
+(four small producers in favour, one large holder against)
+
+Nothing is collected on a failed vote. `preview_producer_vote` gives the same
+answer without touching the fund.
+
+20 tests in `producer_vote_test.cpp`.
+
+# Legislative sessions
+
+Sessions open on a fixed interval and sit for a fixed span. Bills filed while
+the chamber is dark are **held for the next session**, not lost.
+
+Every bill in a session is decided against the law **as it stood when the
+session opened**, then the passing ones are applied. Deciding them in filing
+order instead would let one bill depend on an earlier bill in the same session
+having passed, which makes the order of filing decide outcomes -- exactly what
+a fixed sitting should prevent. A repeal filed in the same session that creates
+a law finds nothing to repeal.
+
+28 tests in `session_test.cpp`.
+
+# Amendment rollback
+
+For the case where an amendment looks right and turns out badly: a doctrine is
+adopted, becomes the basis of every decision, is found years later to have been
+corrosive, and there is no way left to reverse it.
+
+**The threshold asymmetry is the mechanism.** If rolling back needs the same
+share as ratifying, an amendment ratified at 75% can only be undone by 75%
+against it, so a 25% minority keeps it forever. That is not a safeguard, it is
+entrenchment. Measured:
+
+```
+  rollback bar = ratification bar (both 75%)
+    a 70% majority wanting it gone is NOT enough
+    the amendment survives on a 30% minority
+
+  rollback bar lower (50%)
+    the same 70% carries it
+```
+
+The cost is real and should be stated: amendments become less stable, and a
+measure adopted at 75% can be undone by 50% once opinion shifts. Where the bar
+sits is a political decision, not a technical one, which is why it is a
+parameter. `examine()` answers the entrenchment question directly for any pair
+of thresholds.
+
+A rolled-back amendment keeps its record with `rolled_back_at` set -- what was
+in force and when stays answerable afterwards.
+
+18 tests in `rollback_test.cpp`.
+
+# Totals
+
+| suite | tests |
+|---|---|
+| `sat2` | 11 |
+| `trade_check` | 13 |
+| `vault_check` | 10 |
+| `structural_check` | 13 |
+| `triggerable` | 8 |
+| `market` | 26 |
+| `vote` | 25 |
+| `producer_vote` | 20 |
+| `session` | 28 |
+| `rollback` | 18 |
+| **total** | **172** |
