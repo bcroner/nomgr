@@ -278,3 +278,60 @@ for the other, and the second one is what makes the re-check meaningful.
 
 This is also cheap: `check_exhaustion` is O(deposits), measured at 0.46 ms
 across 400,000 deposits, so running it on every dequeue costs nothing.
+
+---
+
+# The complete check
+
+`triggerable.hpp` is the single call the queue needs, at enqueue and again at
+dequeue:
+
+```cpp
+TriggerVerdict v = is_triggerable(state, offer_id, holdings, claims);
+if (!v.triggerable) { /* v.reason says which half failed and why */ }
+```
+
+Two halves, because one tool cannot do both jobs:
+
+| half | question | tool | why |
+|---|---|---|---|
+| structural | requires / bans / insurance | 2-SAT | requires and bans **chain**: A requires B, B requires C, C bans A means A can never trigger. A single pass over the lists will not see that. |
+| resource | is the gold still there | arithmetic | a sum is not a binary clause. 2-CNF cannot express it at any price. |
+
+The queue, running as designed:
+
+```
+    offer 1 enqueue: triggerable
+    offer 2 enqueue: triggerable
+    offer 1 dequeue: triggerable -> executed, 0 mg left
+    offer 2 dequeue: resources: short by 100 gold milligrams -> refused
+```
+
+Both pass at enqueue, which is correct -- each is individually fine at the time
+it is queued. The re-check on dequeue catches the change. That is the guard
+firing the way it was meant to.
+
+# Summary of the work
+
+**Started with:** 109 compile errors, threading built on a type that does not
+exist, an exponential solver, and a trade check that could not fail.
+
+**Now:** 55 tests passing across five modules.
+
+| module | what it does | tests |
+|---|---|---|
+| `sat2` | linear-time 2-SAT, SCC based, plus batch parallelism | 11 |
+| `structural_check` | requires / bans / insurance, chains included | 13 |
+| `vault_check` | exhaustion by arithmetic | 10 |
+| `triggerable` | both halves, one call | 8 |
+| `trade_check` | conflict encoding for batch clearing (not needed while offers are serialised) | 13 |
+
+**Measured:**
+
+- 200,000 variables / 400,000 clauses: **29 ms** (the old solver did not finish
+  30 variables in nine minutes)
+- 400,000 deposits totalling 400 tonnes: **0.46 ms**
+
+**Left:** `NOMGR.cpp` still has 59 errors, all inside `create_trade_check`,
+which these modules replace rather than repair. Wiring `Market` / `Offer` /
+`Account` to call `is_triggerable` is the remaining work.
