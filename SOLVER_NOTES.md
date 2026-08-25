@@ -480,3 +480,86 @@ written. Left alone rather than guessed at.
 | **total** | **81** |
 
 `NOMGR.cpp`: 109 errors to 0.
+
+---
+
+# Article V and the legal system
+
+Every vote structure in `NOMGR.hpp` carries two totals:
+
+```
+votes_for / votes_against                 heads
+gold_milligram_value_for / _against       money
+```
+
+which is the configurable balance of money and the will of the masses.
+
+## The two totals cannot simply be added
+
+Gold is counted in milligrams. One participant holding a kilogram contributes
+1,000,000 while a voter contributes 1, so any weighted sum of the **raw**
+totals is pure plutocracy whatever weights are chosen -- the headcount term
+vanishes into the rounding.
+
+Each side is therefore reduced to a share of its own kind first, and only then
+blended. Measured on the same ballot -- 100 voters holding 1 g in favour, 5
+holding 9 kg against:
+
+| blending | the people's share of the say |
+|---|---|
+| raw totals, 50/50 weights | **0.0122 %** |
+| normalised shares, 50/50 weights | **47.6 %** |
+
+Same weights, same votes, four thousandfold difference. It comes entirely from
+where the normalisation happens.
+
+## The dial
+
+```
+    head weight | gold weight | share for | passes at 50%?
+         0.0    |     1.0     |   0.000   | no
+         0.2    |     0.8     |   0.191   | no
+         0.4    |     0.6     |   0.381   | no
+         0.5    |     0.5     |   0.476   | no
+         0.6    |     0.4     |   0.571   | yes
+         0.8    |     0.2     |   0.762   | yes
+         1.0    |     0.0     |   0.952   | yes
+```
+
+`head_weight = 1` is one person one vote. `gold_weight = 1` is one milligram
+one vote. The outcome flips between them, which is the dial doing its job.
+
+## Thresholds
+
+A share of the blended score, not of the headcount:
+
+- `0.50` simple majority
+- `0.667` two thirds, as Article V requires to propose
+- `0.75` three quarters, as Article V requires to ratify
+
+A quorum can be set separately, in heads, so a vote nobody attended passes
+nothing.
+
+## Bills and law
+
+`enact` applies a bill to a body of law only if it passes. A repeal sets
+`valid_end` rather than deleting the record, so the history of what was in
+force and when survives -- which matters if a law is ever litigated after
+repeal. Repealing something already repealed does nothing.
+
+## Conventions
+
+`hold_convention` is two-stage, mirroring Article V: the convention must clear
+its own threshold before any option counts. Options are still tallied when the
+convention fails, so the record shows what would have happened, but nothing
+ratifies. Where several options clear the ratification bar, the one with the
+highest blended score wins.
+
+25 tests in `vote_test.cpp`.
+
+## Left undone
+
+`Legislative_Session`, `Rollback_Article_V_Convention` and the voucher-weighted
+fields (`vouchers_for`, `for_voucher_counts`) are still unused. The voucher
+fields suggest a third weighting dimension alongside heads and gold; that needs
+a decision about what a voucher is worth in a vote before it can be written.
