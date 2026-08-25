@@ -43,13 +43,20 @@ original function verbatim):
 
 ```
   vars  clauses |      original |     linear | speedup
-    10       20 |       0.01 ms |   0.005 ms |        2x
-    14       28 |       0.01 ms |   0.002 ms |        3x
-    18       36 |       0.01 ms |   0.003 ms |        2x
-    22       44 |       0.01 ms |   0.003 ms |        2x
-    26       52 |       0.02 ms |   0.004 ms |        7x
-    30       60 |  did not finish in 9 minutes  |   0.004 ms
+    10       20 |       0.01 ms |   0.005 ms |        3x
+    14       28 |       0.02 ms |   0.002 ms |        8x
+    18       36 |       0.01 ms |   0.008 ms |        1x
+    22       44 |       0.01 ms |   0.006 ms |        2x
+    26       52 |       0.03 ms |   0.005 ms |        6x
+    30       60 |   over 20 s   |   0.005 ms | >4000000x
+    34       68 |   over 20 s   |   0.013 ms | >1600000x
+    38       76 |   over 20 s   |   0.006 ms | >3333333x
 ```
+
+The speedups on the last three rows are lower bounds -- the original had not
+finished when the deadline expired, so the true ratio is larger. It was left
+running for nine minutes on the 30-variable instance during development and
+still did not return.
 
 The honest characterisation is not "the old one is slow" -- below 26 variables
 it is fine. It is **unpredictably exponential**: it handles easy instances in

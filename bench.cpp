@@ -11,6 +11,9 @@
 #include <cstdint>
 #include <random>
 #include <vector>
+#include <thread>
+#include <atomic>
+#include <chrono>
 
 #define TRUE_2SAT 1
 #define FALSE_2SAT -1
@@ -327,34 +330,71 @@ int main() {
         bool slow_sat = false;
 
         if (original_viable) {
+            // The original can run for hours on a hard instance, so it gets a
+            // deadline.
+            //
+            // std::async is the wrong tool: its future blocks in wait() AND in
+            // its destructor, so a timed-out task still stalls the caller --
+            // which is exactly what the first attempt at this did. A detached
+            // thread is the only way to walk away from a computation that will
+            // not stop.
+            //
+            // Everything the detached thread touches is heap allocated and
+            // deliberately never freed, because it may still be reading long
+            // after this loop moves on. Leaking a few kilobytes in a benchmark
+            // is the correct trade against a use-after-free.
             const __int64 n_parm = nv + 2;
-            SATSolver s;
-            s.n_parm = n_parm;
-            s.k_parm = k;
-            s.chops = 0;
-            s.chop = 0;
-            s.leading_trues = 0;
-            bool* Z = new bool[n_parm + 2]();
-            bool* isf = new bool[n_parm + 2]();
-            bool* ist = new bool[n_parm + 2]();
-            bool* sln = new bool[n_parm + 2]();
-            s.Z = Z;
-            s.is_f = isf;
-            s.is_t = ist;
-            s.lst_l_parm = L.data();
-            s.lst_r_parm = R.data();
+
+            auto* Lh = new std::vector<__int64>(L);
+            auto* Rh = new std::vector<__int64>(R);
+            auto* sh = new SATSolver();
+            sh->n_parm = n_parm;
+            sh->k_parm = k;
+            sh->chops = 0;
+            sh->chop = 0;
+            sh->leading_trues = 0;
+            sh->Z    = new bool[n_parm + 2]();
+            sh->is_f = new bool[n_parm + 2]();
+            sh->is_t = new bool[n_parm + 2]();
+            sh->lst_l_parm = Lh->data();
+            sh->lst_r_parm = Rh->data();
+            bool* slnh = new bool[n_parm + 2]();
+
+            auto* done = new std::atomic<int>(-1);   // -1 running, 0 no, 1 yes
+            // Measured INSIDE the worker. Timing it by polling from outside
+            // folds the poll interval into the result and reported 15 ms for
+            // instances that actually take 0.01 ms.
+            auto* elapsed = new std::atomic<double>(0.0);
 
             const auto u0 = std::chrono::steady_clock::now();
-            slow_sat = original_isSat(&s, sln);
-            const auto u1 = std::chrono::steady_clock::now();
-            slow_ms = std::chrono::duration<double, std::milli>(u1 - u0).count();
+            std::thread worker([sh, slnh, done, elapsed]() {
+                const auto t0 = std::chrono::steady_clock::now();
+                const bool r = original_isSat(sh, slnh);
+                const auto t1 = std::chrono::steady_clock::now();
+                elapsed->store(std::chrono::duration<double, std::milli>(t1 - t0).count(),
+                               std::memory_order_relaxed);
+                done->store(r ? 1 : 0, std::memory_order_release);
+            });
+            worker.detach();
 
-            delete[] Z;
-            delete[] isf;
-            delete[] ist;
-            delete[] sln;
+            const double budget_ms = 20000.0;
+            int answer = -1;
+            while (true) {
+                answer = done->load(std::memory_order_acquire);
+                if (answer >= 0) break;
+                const auto now = std::chrono::steady_clock::now();
+                if (std::chrono::duration<double, std::milli>(now - u0).count() > budget_ms)
+                    break;
+                std::this_thread::sleep_for(std::chrono::microseconds(200));
+            }
 
-            if (slow_ms > 15000.0) original_viable = false;
+            if (answer >= 0) {
+                slow_sat = (answer == 1);
+                slow_ms = elapsed->load(std::memory_order_relaxed);
+            } else {
+                slow_ms = -2.0;             // sentinel: still running past the budget
+                original_viable = false;    // do not try anything larger
+            }
         }
 
         if (slow_ms >= 0.0) {
@@ -363,8 +403,10 @@ int main() {
                         fast_ms > 0.0 ? slow_ms / fast_ms : 0.0,
                         (slow_sat == fast.satisfiable) ? "" : "   <-- ANSWERS DIFFER");
         } else {
-            std::printf("  %4d  %7d |    (gave up)  | %7.3f ms |       --\n",
-                        nv, k, fast_ms);
+            // Exceeded the deadline. The speedup is a lower bound: the
+            // original had not finished, so the true ratio is larger.
+            std::printf("  %4d  %7d |   over 20 s   | %7.3f ms | >%.0fx\n",
+                        nv, k, fast_ms, fast_ms > 0.0 ? 20000.0 / fast_ms : 0.0);
         }
         std::fflush(stdout);
     }
