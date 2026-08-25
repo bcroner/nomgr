@@ -175,3 +175,54 @@ appear anywhere in the repository.
 Compile errors are down from 109 to 59; the remainder are inside
 `create_trade_check`, which `trade_check.cpp` is intended to replace rather
 than repair.
+
+---
+
+# Vault exhaustion: use arithmetic, not SAT
+
+The requirement is to detect whether a set of trades would exhaust the gold in
+the vault. The instinct was to identify specific milligrams so the demand can
+be traced. Identity is worth having -- it is what separates allocated from
+unallocated gold, and which deposit backs which claim -- but it is not what
+detects exhaustion, and it is far more expensive than that question needs.
+
+## Measured: one SAT variable per milligram
+
+```
+  gold in vault |  milligrams |   solve | memory
+       1 gram   |       1,000 |    0 ms | ~0 GB
+     100 grams  |     100,000 |   15 ms | ~0.01 GB
+        1 kilo  |   1,000,000 |  451 ms | ~0.10 GB
+       10 kilos |  10,000,000 | 5823 ms | ~0.96 GB
+```
+
+It runs out near **10 kilograms**. One tonne is 10^9 milligrams -- roughly ten
+minutes and ~100 GB. A 400-tonne reserve is 4x10^11. Not reachable.
+
+## Measured: arithmetic
+
+Exhaustion is a sum. `check_exhaustion` adds up what the accepted offers demand
+and compares it with the vault total:
+
+```
+  400,000 deposits totalling 400 tonnes, 400,000 claims -> 0.46 ms
+```
+
+Same question, exact answer, at a scale the per-milligram encoding cannot
+approach at all.
+
+## Division of labour
+
+| Question | Tool | Cost |
+|---|---|---|
+| Which offers **conflict** over the same unit? | 2-SAT (`trade_check`) | linear in offers and clauses |
+| Can the vault **cover** what was accepted? | arithmetic (`vault_check`) | linear in deposits |
+| Does gold given **equal** gold received? | arithmetic | linear |
+
+2-CNF expresses conflict. It cannot express a sum -- that is not a binary
+clause. Keeping the counting in arithmetic is what makes national-reserve scale
+possible.
+
+`vault_check.{hpp,cpp}` plus 10 tests, including saturating rather than
+wrapping on overflow: a wrapped total would report a vault able to cover
+anything at all.
