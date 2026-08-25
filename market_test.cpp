@@ -105,12 +105,21 @@ int main() {
     offer->gives_gold_milligram_value = 5000;
     check("offer wanting 5000 of 1000 mg is refused", !check_trade(tc));
 
-    // Back within budget, but banning a participant who is present.
+    // Back within budget. An offer that both REQUIRES and BANS the same
+    // participant is self-contradictory and must be refused. (Banning someone
+    // who is not party to the trade is vacuous, and correctly allowed -- a ban
+    // stops a trade, it does not expel a person from the market.)
     offer->gives_gold_milligram_value = 400;
-    create_ban_participant(market, b->id, 0);          // harmless
+    offer->participants_require = simp_vector_create(4);
+    offer->participants_require_vtop = -1;
+    offer->participants_require_vcap = 4;
+    simp_vector_append(&(offer->participants_require), &(offer->participants_require_vtop),
+                       &(offer->participants_require_vcap), b->id);
+    check("offer requiring b alone is fine", check_trade(tc));
+
     simp_vector_append(&(offer->participants_ban), &(offer->participants_ban_vtop),
                        &(offer->participants_ban_vcap), b->id);
-    check("offer banning a present participant is refused", !check_trade(tc));
+    check("offer both requiring and banning b is refused", !check_trade(tc));
 
     // Remove the ban and it should clear again -- this only works because the
     // remove functions were fixed.
@@ -118,6 +127,64 @@ int main() {
     check("clearing the ban makes it triggerable again", check_trade(tc));
 
     // Unknown offer id.
+    // --- an offer inherits the standing of whoever posted it --------------
+    //
+    // An offer is made BY participants, so it carries their standing. If a
+    // counterparty boycotts one of them, the trade cannot clear. A boycott by
+    // someone NOT party to the trade must not block it -- a boycott means "I
+    // will not trade with you", not "you are expelled from the market".
+    {
+        Offer* o2 = new Offer();
+        o2->id = 600;
+        o2->gives_gold_milligram_value = 100;
+        o2->require = simp_vector_create(4);  o2->require_vtop = -1; o2->require_vcap = 4;
+        o2->bans = simp_vector_create(4);     o2->bans_vtop = -1;    o2->bans_vcap = 4;
+        o2->participants_require = simp_vector_create(4);
+        o2->participants_require_vtop = -1;   o2->participants_require_vcap = 4;
+        o2->participants_ban = simp_vector_create(4);
+        o2->participants_ban_vtop = -1;       o2->participants_ban_vcap = 4;
+        o2->insurance_policies_required = simp_vector_create(4);
+        o2->insurance_policies_required_vtop = -1;
+        o2->insurance_policies_required_vcap = 4;
+        o2->insurance_policies_accepted = simp_vector_create(4);
+        o2->insurance_policies_accepted_vtop = -1;
+        o2->insurance_policies_accepted_vcap = 4;
+        o2->insurance_policies_applied = simp_vector_create(4);
+        o2->insurance_policies_applied_vtop = -1;
+        o2->insurance_policies_applied_vcap = 4;
+        o2->participants_offering = simp_vector_create(4);
+        o2->participants_offering_vtop = -1;  o2->participants_offering_vcap = 4;
+
+        // a posts the offer; b is required as a counterparty
+        simp_vector_append(&(o2->participants_offering),
+                           &(o2->participants_offering_vtop),
+                           &(o2->participants_offering_vcap), a->id);
+        simp_vector_append(&(o2->participants_require),
+                           &(o2->participants_require_vtop),
+                           &(o2->participants_require_vcap), b->id);
+
+        simp_offer_vector_append(&(market->barter_system->offers),
+                                 &(market->barter_system->offers_vtop),
+                                 &(market->barter_system->offers_vcap), o2);
+
+        Trade_Check* tc2 = create_trade_check(market, vault, o2->id);
+        check("an offer from an unencumbered participant triggers", check_trade(tc2));
+
+        create_ban_participant(market, b->id, a->id);
+        check("the boycott is recorded", b->bans_vtop == 0 && b->bans[0] == a->id);
+        check("a's offer is refused while counterparty b boycotts a", !check_trade(tc2));
+
+        remove_ban_participant(market, b->id, a->id);
+        check("a's offer clears once the boycott is lifted", check_trade(tc2));
+
+        Participant* c3 = create_participant(market);
+        simp_participant_vector_append(&(market->participants),
+                                       &(market->participants_vtop),
+                                       &(market->participants_vcap), c3);
+        create_ban_participant(market, c3->id, a->id);
+        check("a boycott by a non-party does not block the trade", check_trade(tc2));
+    }
+
     Trade_Check* bad = create_trade_check(market, vault, 99999);
     check("a trade check for an unknown offer is refused", !check_trade(bad));
 

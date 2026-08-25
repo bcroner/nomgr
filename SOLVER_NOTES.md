@@ -419,3 +419,64 @@ make bench      # old solver against new
   every give overwrites element 0
 - `main()` is empty (renamed `nomgr_unused_main` so tests can link)
 - the legal system, vouchers and Article V structures are defined but unused
+
+---
+
+# Offers carry their offeror's standing
+
+An offer is made BY participants, so it inherits their standing: if a
+counterparty boycotts one of them, the trade cannot clear. `market_state_from`
+now emits, for each offer, an implication to every participant in
+`participants_offering`.
+
+## Scope of a boycott
+
+Participants are deliberately **not** pinned in force. Pinning every
+participant makes any boycott between two of them unsatisfiable market-wide,
+which expels people rather than stopping a trade.
+
+Instead the offer under test implies its own offerors and required
+participants, so exactly the parties to that trade become true. A boycott then
+bites only when the boycotter is one of them:
+
+```
+  an offer from an unencumbered participant triggers          PASS
+  a's offer is refused while counterparty b boycotts a        PASS
+  a's offer clears once the boycott is lifted                 PASS
+  a boycott by a non-party does not block the trade           PASS
+```
+
+That is a boycott meaning "I will not trade with you", not "you are expelled
+from the market". If market-wide exclusion is wanted instead, pin the banning
+participant in force and the same clauses give that behaviour.
+
+# create_offer wrote every give into element 0
+
+```c
+offer->gives->id = give[i].id;          // gives[0], every iteration
+```
+
+Twenty writes across `gives` and `receives` addressed element 0 rather than
+element `i`, so an offer with five gives ended up with the fifth one repeated
+and four empty slots. The running totals had the matching bug -- they summed
+`give->gold_milligram_value`, the same element each time, rather than
+`give[i]`. All corrected.
+
+# Article V and the legal system
+
+Defined but unused, by intent -- specific votes were planned there and never
+written. Left alone rather than guessed at.
+
+# Final state
+
+| suite | tests |
+|---|---|
+| `sat2` | 11 |
+| `structural_check` | 13 |
+| `vault_check` | 10 |
+| `triggerable` | 8 |
+| `trade_check` | 13 |
+| `market` | 26 |
+| **total** | **81** |
+
+`NOMGR.cpp`: 109 errors to 0.

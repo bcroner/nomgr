@@ -745,22 +745,22 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
 
 	for (__int64 i = 0; i <= give_vtop; i++) {
             
-		offer->gives->id = give[i].id;
+		offer->gives[i].id = give[i].id;
 
 		for (__int64 j = 0; j <= give[i].title_vtop+1; j++)
-			offer->gives->title[j] = give[i].title[j];
-		offer->gives->title_vtop = give[i].title_vtop;
-		offer->gives->title_vcap = give[i].title_vcap;
+			offer->gives[i].title[j] = give[i].title[j];
+		offer->gives[i].title_vtop = give[i].title_vtop;
+		offer->gives[i].title_vcap = give[i].title_vcap;
 
         for (__int64 j = 0; j <= give[i].description_vtop; j++)
-            offer->gives->description[j] = give[i].description[j];
-        offer->gives->description_vtop = give[i].description_vtop;
-        offer->gives->description_vcap = give[i].description_vcap;
+            offer->gives[i].description[j] = give[i].description[j];
+        offer->gives[i].description_vtop = give[i].description_vtop;
+        offer->gives[i].description_vcap = give[i].description_vcap;
 
         for (__int64 j = 0; j <= give[i].media_url_vtop; j++)
-            offer->gives->media_url[j] = give[i].media_url[j];
-        offer->gives->media_url_vtop = give[i].media_url_vtop;
-        offer->gives->media_url_vcap = give[i].media_url_vcap;
+            offer->gives[i].media_url[j] = give[i].media_url[j];
+        offer->gives[i].media_url_vtop = give[i].media_url_vtop;
+        offer->gives[i].media_url_vcap = give[i].media_url_vcap;
 
         offer->valid_start = give[i].valid_start;
         offer->valid_end = give[i].valid_end;
@@ -771,27 +771,27 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
         offer->gives_gold_milligram_value = 0;
 
 		for (__int64 j = 0; j <= give_voucher_counts_vtop; j++)
-            offer->gives_gold_milligram_value += give->gold_milligram_value;
+            offer->gives_gold_milligram_value += give[i].gold_milligram_value;
 	}
 
     for (__int64 i = 0; i <= receive_vtop; i++) {
 
-        offer->receives->id = receive[i].id;
+        offer->receives[i].id = receive[i].id;
 
         for (__int64 j = 0; j <= receive[i].title_vtop; j++)
-            offer->receives->title[j] = receive[i].title[j];
-        offer->receives->title_vtop = receive[i].title_vtop;
-        offer->receives->title_vcap = receive[i].title_vcap;
+            offer->receives[i].title[j] = receive[i].title[j];
+        offer->receives[i].title_vtop = receive[i].title_vtop;
+        offer->receives[i].title_vcap = receive[i].title_vcap;
 
         for (__int64 j = 0; j <= receive[i].description_vtop; j++)
-            offer->receives->description[j] = receive[i].description[j];
-        offer->receives->description_vtop = receive[i].description_vtop;
-        offer->receives->description_vcap = receive[i].description_vcap;
+            offer->receives[i].description[j] = receive[i].description[j];
+        offer->receives[i].description_vtop = receive[i].description_vtop;
+        offer->receives[i].description_vcap = receive[i].description_vcap;
 
         for (__int64 j = 0; j <= receive[i].media_url_vtop; j++)
-            offer->receives->media_url[j] = receive[i].media_url[j];
-        offer->receives->media_url_vtop = receive[i].media_url_vtop;
-        offer->receives->media_url_vcap = receive[i].media_url_vcap;
+            offer->receives[i].media_url[j] = receive[i].media_url[j];
+        offer->receives[i].media_url_vtop = receive[i].media_url_vtop;
+        offer->receives[i].media_url_vcap = receive[i].media_url_vcap;
 
         offer->valid_start = receive[i].valid_start;
         offer->valid_end = receive[i].valid_end;
@@ -802,7 +802,7 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
         offer->receives_gold_milligram_value = 0;
 
         for (__int64 j = 0; j <= receive_voucher_counts_vtop; j++)
-            offer->receives_gold_milligram_value += receive->gold_milligram_value;
+            offer->receives_gold_milligram_value += receive[i].gold_milligram_value;
     }
 
     offer->valid_start = give[0].valid_start;
@@ -1092,12 +1092,20 @@ static nomgr::MarketState market_state_from(Market* market) {
 
         nomgr::Conditions c;
         c.subject = nomgr::participant_ref(p->id);
-        collect_refs(p->require, p->require_vtop, nomgr::Kind::Offer, c.requires_all);
-        collect_refs(p->bans, p->bans_vtop, nomgr::Kind::Offer, c.bans);
+        // A participant's own requires and bans name other participants:
+        // boycotts. B banning A means the two cannot both be party to a trade.
+        collect_refs(p->require, p->require_vtop,
+                     nomgr::Kind::Participant, c.requires_all);
+        collect_refs(p->bans, p->bans_vtop,
+                     nomgr::Kind::Participant, c.bans);
         st.conditions.push_back(c);
 
-        // A participant present in the market is in force.
-        st.in_force.push_back(nomgr::participant_ref(p->id));
+        // Deliberately NOT pinned in force. Pinning every participant makes
+        // any boycott between two of them unsatisfiable market-wide, which
+        // would expel people rather than stop a trade. The offer under test
+        // implies its own offerors and required participants, so exactly the
+        // parties to that trade become true and a boycott bites only when the
+        // boycotter is one of them.
     }
 
     if (!market->barter_system) return st;
@@ -1109,6 +1117,13 @@ static nomgr::MarketState market_state_from(Market* market) {
 
         nomgr::Conditions c;
         c.subject = nomgr::offer_ref(o->id);
+
+        // An offer is made BY participants, and it inherits their standing:
+        // if a participant who made it is banned or boycotted by someone in
+        // the market, the offer cannot trigger. Without this clause an offer
+        // floats free of whoever posted it.
+        collect_refs(o->participants_offering, o->participants_offering_vtop,
+                     nomgr::Kind::Participant, c.requires_all);
 
         collect_refs(o->require, o->require_vtop,
                      nomgr::Kind::Offer, c.requires_all);
