@@ -226,3 +226,55 @@ possible.
 `vault_check.{hpp,cpp}` plus 10 tests, including saturating rather than
 wrapping on overflow: a wrapped total would report a vault able to cover
 anything at all.
+
+---
+
+# Correction: the architecture is sequential
+
+Offers are accepted **one at a time** from a queue, and triggerability is
+checked a second time on dequeue because offers queued earlier may already have
+consumed the resources.
+
+That invalidates part of the earlier analysis in this file. The scenario in
+`doublespend_demo.cpp` -- two offers accepted *simultaneously* -- cannot occur
+under serialisation. The pairwise mutual-exclusion clauses in `trade_check.cpp`
+are therefore solving a problem this architecture already prevents. They remain
+correct, and would be needed if offers were ever cleared in batches, but they
+are not what this system needs today.
+
+## The finding survives in sequential form
+
+The double-check is the right design. A guard only helps if it can fail,
+though, and the clause pattern `create_trade_check` emits is satisfiable
+regardless of what the vault holds. So the second check returns exactly what
+the first one did and never fires.
+
+`queue_demo.cpp`, one offer at a time, with the re-check in place:
+
+```
+  check as written today (biconditionals only)
+    offer 1 re-check on dequeue: still triggerable -> executed, Alice now 0 mg
+    offer 2 re-check on dequeue: still triggerable -> executed, Alice now -100 mg
+    final balance: -100 mg  <-- OVERDRAWN
+
+  check with the balance consulted
+    offer 2 re-check on dequeue: NO LONGER triggerable -> refused
+    final balance: 0 mg  <-- sound
+```
+
+## What the re-check needs
+
+Not exclusion clauses. It needs the **live balance** consulted at dequeue time:
+
+```cpp
+if (!structural_check(offer))                      return false;  // 2-SAT
+if (!check_exhaustion(current_holdings, claims))   return false;  // arithmetic
+```
+
+The 2-SAT half answers the structural question -- do this offer's requires,
+bans and insurance conditions have a consistent solution. The arithmetic half
+answers the resource question -- is the gold still there. Neither substitutes
+for the other, and the second one is what makes the re-check meaningful.
+
+This is also cheap: `check_exhaustion` is O(deposits), measured at 0.46 ms
+across 400,000 deposits, so running it on every dequeue costs nothing.
