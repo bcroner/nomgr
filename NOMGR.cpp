@@ -442,7 +442,7 @@ Simp_Queue * simp_queue_dequeue(Simp_Queue* queue) {
 
 }
 
-void make_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, __int64* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, give_voucher_counts_vcap, __int64* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+void make_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64* receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
     __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
     __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
     __int64* participants_require, __int64 participants_require_vtop, __int64 participants_require_vcap, __int64* participants_ban, __int64 participants_ban_vtop, __int64 participants_ban_vcap,
@@ -691,7 +691,7 @@ void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm) {
 
 }
 
-Offer* create_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, __int64* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, give_voucher_counts_vcap, __int64* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+Offer* create_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64* receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
     __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
     __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
     __int64* participants_require, __int64 participants_require_vtop, __int64 participants_require_vcap, __int64* participants_ban, __int64 participants_ban_vtop, __int64 participants_ban_vcap,
@@ -743,11 +743,12 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
     offer->bans_vtop = -1;
     offer->bans_vcap = 16;
 
-	for (__int64 i = 0; i <= participants_offering_vtop + 1; i++)
-		simp_participant_vector_append(&(offer->participants_offering), &participants_offering_vtop, &participants_offering_vcap), simp_participant_vector_read(offer->participants_offering, participants_offering_vtop, participants_offering_vcap, i));
+	for (__int64 i = 0; i <= participants_offering_vtop; i++)
+		simp_vector_append(&(offer->participants_offering), &(offer->participants_offering_vtop), &(offer->participants_offering_vcap),
+			simp_vector_read(participants_offering, participants_offering_vtop, participants_offering_vcap, i));
 
 
-	for (__int64 i = 0; i <= give_vtop + 1; i++) { {
+	for (__int64 i = 0; i <= give_vtop; i++) {
             
 		offer->gives->id = give[i].id;
 
@@ -756,12 +757,12 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
 		offer->gives->title_vtop = give[i].title_vtop;
 		offer->gives->title_vcap = give[i].title_vcap;
 
-        for (__int64 j = 0; j <= give[i].description_vtop + 1; j++)
+        for (__int64 j = 0; j <= give[i].description_vtop; j++)
             offer->gives->description[j] = give[i].description[j];
         offer->gives->description_vtop = give[i].description_vtop;
         offer->gives->description_vcap = give[i].description_vcap;
 
-        for (__int64 j = 0; j <= give[i].media_url_vtop + 1; j++)
+        for (__int64 j = 0; j <= give[i].media_url_vtop; j++)
             offer->gives->media_url[j] = give[i].media_url[j];
         offer->gives->media_url_vtop = give[i].media_url_vtop;
         offer->gives->media_url_vcap = give[i].media_url_vcap;
@@ -774,25 +775,25 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
 
         offer->gives_gold_milligram_value = 0;
 
-		for (__int64 j = 0; j <= give_voucher_counts_vtop + 1; j++)
+		for (__int64 j = 0; j <= give_voucher_counts_vtop; j++)
             offer->gives_gold_milligram_value += give->gold_milligram_value;
 	}
 
-    for (__int64 i = 0; i <= receive_vtop + 1; i++) {
+    for (__int64 i = 0; i <= receive_vtop; i++) {
 
         offer->receives->id = receive[i].id;
 
-        for (__int64 j = 0; j <= receive[i].title_vtop + 1; j++)
+        for (__int64 j = 0; j <= receive[i].title_vtop; j++)
             offer->receives->title[j] = receive[i].title[j];
         offer->receives->title_vtop = receive[i].title_vtop;
         offer->receives->title_vcap = receive[i].title_vcap;
 
-        for (__int64 j = 0; j <= receive[i].description_vtop + 1; j++)
+        for (__int64 j = 0; j <= receive[i].description_vtop; j++)
             offer->receives->description[j] = receive[i].description[j];
         offer->receives->description_vtop = receive[i].description_vtop;
         offer->receives->description_vcap = receive[i].description_vcap;
 
-        for (__int64 j = 0; j <= receive[i].media_url_vtop + 1; j++)
+        for (__int64 j = 0; j <= receive[i].media_url_vtop; j++)
             offer->receives->media_url[j] = receive[i].media_url[j];
         offer->receives->media_url_vtop = receive[i].media_url_vtop;
         offer->receives->media_url_vcap = receive[i].media_url_vcap;
@@ -805,19 +806,19 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
 
         offer->receives_gold_milligram_value = 0;
 
-        for (__int64 j = 0; j <= receive_voucher_counts_vtop + 1; j++)
+        for (__int64 j = 0; j <= receive_voucher_counts_vtop; j++)
             offer->receives_gold_milligram_value += receive->gold_milligram_value;
     }
 
     offer->valid_start = give[0].valid_start;
 
-	for (__int64 j = 1; j <= give_vtop + 1; j++)
+	for (__int64 j = 1; j <= give_vtop; j++)
 		if (give[j].valid_start < offer->valid_start)
 			offer->valid_start = give[j].valid_start;
 
     offer->valid_end = give[0].valid_end;
 
-    for (__int64 j = 1; j <= give_vtop + 1; j++)
+    for (__int64 j = 1; j <= give_vtop; j++)
         if (give[j].valid_end < offer->valid_end)
             offer->valid_end = give[j].valid_end;
 
@@ -826,10 +827,10 @@ Offer* create_offer(Market* market, __int64* participants_offering, __int64 part
     offer->interval_type = interval_type;
     offer->intervals = intervals;
 
-	for (__int64 j = 0; j <= insurance_policies_accepted_vtop + 1; j++)
+	for (__int64 j = 0; j <= insurance_policies_accepted_vtop; j++)
 		offer->insurance_policies_accepted[j] = insurance_policies_accepted[j];
 
-    for (__int64 j = 0; j <= insurance_policies_applied_vtop + 1; j++)
+    for (__int64 j = 0; j <= insurance_policies_applied_vtop; j++)
         offer->insurance_policies_applied[j] = insurance_policies_applied[j];
 
     offer->gives_vtop = -1;
@@ -1350,7 +1351,7 @@ void check_trade(SATSolver* s, Trade_Check* trade_check, bool** sln, bool repeat
 		bool l_abs_found = false;
 		bool r_abs_found = false;
 
-        for (__int64 j = 0; j <= unique_checker_vtop + 1; j++) {
+        for (__int64 j = 0; j <= unique_checker_vtop; j++) {
 
             if (unique_checker[j] == l_abs)
                 l_abs_found = true;
