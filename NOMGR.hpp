@@ -1,6 +1,13 @@
 #ifndef __NOMGR_H__
 #define __NOMGR_H__
 
+// __int64 is an MSVC extension. Define it elsewhere so the same source builds
+// with gcc and clang -- which matters the moment this runs anywhere but a
+// Windows desktop.
+#ifndef _MSC_VER
+  typedef long long __int64;
+#endif
+
 #define TRUE_2SAT 1
 #define FALSE_2SAT -1
 
@@ -24,6 +31,11 @@ typedef struct ID_Pool_tag {
 
 	__int64 trade_entities_vtop;
 	__int64 trade_entities_vcap;
+
+	// Ids handed back after use are pushed onto trade_entities and reissued.
+	// When that free list is empty a fresh id is minted from here. Without this
+	// counter every caller received 0.
+	__int64 next_id;
 
 } ID_Pool;
 
@@ -135,7 +147,7 @@ typedef struct Account_System_tag {
 	__int64 accounts_vtop;
 	__int64 accounts_vcap;
 
-} Account;
+} Account_System;
 
 typedef struct Bank_tag {
 
@@ -174,10 +186,10 @@ typedef struct Offer_tag {
 	__int64 id;
 
 	__int64* participants_offering;
-	__int64* gives;
+	Voucher* gives;
 	vocabumalary* gives_classifications;
 	__int64* gives_voucher_counts;
-	__int64* receives;
+	Voucher* receives;
 	vocabumalary* receives_classifications;
 	__int64* receives_voucher_counts;
 	__int64 gives_gold_milligram_value;
@@ -353,7 +365,6 @@ typedef struct Bill_tag {
 	char* description;
 	char* media_url;
 	code_classification classification;
-	__int64 id;
 	bool repeal;
 	__int64 interval;
 	__int64* votes_for;
@@ -453,10 +464,10 @@ typedef struct Vault_tag {
 	Gold_Deposit** gold_deposits;
 	__int64* gold_deposits_counts;
 
-	__int64* gold_deposits_vtop;
-	__int64* gold_deposits_vcap;
-	__int64* gold_deposits_counts_vtop;
-	__int64* gold_deposits_counts_vcap;
+	__int64 gold_deposits_vtop;
+	__int64 gold_deposits_vcap;
+	__int64 gold_deposits_counts_vtop;
+	__int64 gold_deposits_counts_vcap;
 
 } Vault;
 
@@ -493,21 +504,11 @@ typedef struct Market_tag {
 
 typedef struct Trade_Check_tag {
 
-	__int64* vocabumalary_tracker_class;
-	__int64* vocabumalary_tracker_id;
-
-	__int64* lst_l;
-	__int64* lst_r;
-
-	__int64 vocabumalary_tracker_class_vtop;
-	__int64 vocabumalary_tracker_class_vcap;
-	__int64 vocabumalary_tracker_id_vtop;
-	__int64 vocabumalary_tracker_id_vcap;
-
-	__int64 lst_l_vtop;
-	__int64 lst_l_vcap;
-	__int64 lst_r_vtop;
-	__int64 lst_r_vcap;
+	// What is being checked, and against what. The clause arrays that used to
+	// live here are now internal to the solver (see structural_check.hpp).
+	Market* market;
+	Vault* vault;
+	__int64 offer_id;
 
 } Trade_Check;
 
@@ -525,34 +526,7 @@ typedef struct Simp_Queue_tag {
 
 } Simp_Queue;
 
-typedef struct SATSolver_tag {
 
-	__int64 n_parm;
-	__int64 k_parm;
-
-	__int64 chops;
-	__int64 chop;
-
-	__int64 leading_trues;
-
-	bool* Z;				// current state of advancement through search space
-
-	__int64* lst_l_parm;
-	__int64* lst_r_parm;
-
-	bool* is_f;
-	bool* is_t;
-
-	__int64 lst_l_parm_vtop;
-	__int64 lst_l_parm_vcap;
-	__int64 lst_r_parm_vtop;
-	__int64 lst_r_parm_vcap;
-	__int64 is_f_vtop;
-	__int64 is_f_vcap;
-	__int64 is_t_vtop;
-	__int64 is_t_vcap;
-
-} SATSolver;
 
 Article_V_Option** simp_article_v_option_vector_create(__int64 init_sz);
 Article_V_Option* simp_article_v_option_vector_read(Article_V_Option** v, __int64 vtop, __int64 vcap, __int64 loc);
@@ -589,10 +563,11 @@ __int64 simp_vector_read(__int64* v, __int64 vtop, __int64 vcap, __int64 loc);
 void simp_vector_append(__int64** v, __int64* vtop, __int64* vcap, __int64 data);
 void simp_queue_enqueue(Simp_Queue* queue, Simp_Queue* parm);
 Simp_Queue* simp_queue_dequeue(Simp_Queue* queue);
-void make_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, __int64* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, __int64* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+Trade_Check* simp_queue_peek(Simp_Queue* queue);
+void make_offer(Market* market, __int64 participant_id, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64* receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
 	__int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
 	__int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
-	__int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
+	__int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
 	__int64* require, __int64 require_vtop, __int64 require_vcap, __int64* bans, __int64 bans_vtop, __int64 bans_vcap);
 void create_require_participant(Market* market, __int64 participant_id, __int64 itm);
 void create_require_offer(Market* market, __int64 offer_id, __int64 itm);
@@ -602,13 +577,13 @@ void remove_require_participant(Market* market, __int64 participant_id, __int64 
 void remove_require_offer(Market* market, __int64 offer_id, __int64 itm);
 void remove_ban_participant(Market* market, __int64 participant_id, __int64 itm);
 void remove_ban_offer(Market* market, __int64 offer_id, __int64 itm);
-Offer* (Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, __int64* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, __int64* receive, __int64 receive_vtop, __int64 receive_vcap, __int64 receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+Offer* create_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64* receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
 	__int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
 	__int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
-	__int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
+	__int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
 	__int64* require, __int64 require_vtop, __int64 require_vcap, __int64* bans, __int64 bans_vtop, __int64 bans_vcap);
-int id_pool_retrieve(__int64* id_pool, __int64* id_pool_vtop, __int64* id_pool_vcap);
-void id_pool_submit(__int64* id_pool, __int64* id_pool_vtop, __int64* id_pool_vcap, __int64 id);
+__int64 id_pool_retrieve(ID_Pool* id_pool);
+void id_pool_submit(ID_Pool* id_pool, __int64 id);
 __int64 retrieve_voucher_id(ID_Pool* id_pool);
 void submit_voucher_id(ID_Pool* id_pool, __int64 id);
 __int64 retrieve_account_id(ID_Pool* id_pool);
@@ -627,19 +602,13 @@ __int64 retrieve_participant_id(ID_Pool* id_pool);
 void submit_participant_id(ID_Pool* id_pool, __int64 id);
 Offer** create_offers();
 Participant* create_participant(Market* market);
-Account* create_account(Market* market, __int64 gold_milligram_balance, Voucher* vouchers, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap);
+Account* create_account(Market* market, __int64 gold_milligram_balance, __int64* holdings, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap);
 Bank* create_bank(Market* market, __int64* accounts, __int64* account_holders, __int64 accounts_vtop, __int64 accounts_vcap, __int64 account_holders_vtop, __int64 account_holders_vcap);
 Barter_System* create_barter_system();
 Market* create_market();
 ID_Pool* create_id_pool();
 System* create_system();
-Trade_Check* create_trade_check(Market* market);
-bool check_trade(SATSolver* s, Trade_Check* trade_check, bool repeat);
-bool* SATSolver_create_boundary(bool begin, __int64 chop, __int64 offs, __int64 n, __int64 leading_trues);
-void SATSolver_create(SATSolver*** s, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm);
-void SATSolver_destroy(SATSolver*** s);
-bool SATSolver_isSat(SATSolver* s, bool* sln);
-void thread_2SAT(bool* arr, bool* is_sat, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues);
-bool SATSolver_threads(bool* arr, bool* is_sat, __int64* lst_l_parm, __int64* lst_r_parm, __int64 k_parm, __int64 n_parm, bool* is_f, bool* is_t, __int64 chops, __int64 chop, __int64 leading_trues);
+Trade_Check* create_trade_check(Market* market, Vault* vault, __int64 offer_id);
+bool check_trade(Trade_Check* trade_check);
 
 #endif
