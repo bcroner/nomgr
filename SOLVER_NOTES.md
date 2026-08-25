@@ -95,3 +95,83 @@ of the market layer were written against a data model that does not exist:
 
 These need decisions about intent, not repairs. What is `offers_gives` meant to
 hold? Is `Account::holdings` voucher IDs or `Voucher` objects?
+
+---
+
+# The trade check accepts double spends
+
+This matters more than the compile errors or the speed.
+
+`create_trade_check` emits, for each offer and each thing it gives:
+
+```
+(offer | ~give)   and   (~offer | give)        i.e.  offer <-> give
+```
+
+**Biconditionals alone are always satisfiable.** They sort variables into
+equivalence classes; nothing ever contradicts. So the check accepts every trade
+set handed to it, including impossible ones.
+
+`doublespend_demo.cpp` demonstrates it. Alice owns one milligram of gold and
+posts two offers that each give it away:
+
+```
+  current encoding (biconditionals only)
+    satisfiable: YES
+    offer A accepted: yes
+    offer B accepted: yes
+    --> BOTH ACCEPTED: the same milligram is spent twice
+    with both offers forced accepted: STILL SATISFIABLE
+```
+
+Two things were missing.
+
+**1. Unit identity.** In the original loop `gold_milligram_ix` is a running
+counter incremented per give, so each offer mints its *own* milligram ids. Two
+offers spending Alice's same milligram referred to two different ids and could
+never collide. Ids must come from the owner's actual holdings.
+
+**2. Mutual exclusion.** For every unit claimed by more than one offer,
+`(~A | ~B)` for each pair. That is what forbids double spending. It is still a
+binary clause, so the instance stays 2-SAT and stays linear to decide.
+
+With both fixed, the same scenario gives:
+
+```
+  with mutual exclusion added
+    at most one accepted (correct)
+    with both forced accepted: UNSATISFIABLE -- double spend correctly refused
+```
+
+## What this encoding cannot express
+
+2-CNF can say "these two offers conflict". It cannot say "the gold given must
+equal the gold received" -- that is arithmetic, not a binary clause. Value
+balance has to be checked separately, before or after the SAT step. Worth
+deciding where that lives.
+
+## Files
+
+- `trade_check.{hpp,cpp}` -- the corrected encoding, written against plain data
+  so it is testable now and can be wired into `Market` once that compiles
+- `trade_check_test.cpp` -- 13 tests
+- `doublespend_demo.cpp` -- the scenario above, both encodings side by side
+
+## Answers applied
+
+1. `offers_gives` is the attribution of specific gold to an offer -- implemented
+   as shared unit ids in `trade_check.cpp`, which is what makes collisions
+   detectable.
+2. `Account::holdings` holds voucher **ids**; `create_account` now assigns
+   `holdings` and takes `__int64*`.
+3. The two `create_participant` definitions were byte-identical apart from tabs
+   vs spaces. Removed the second.
+4. `participant_id` is now a parameter of `make_offer`.
+
+Note on units: the code says **milligrams** throughout (`gold_milligram_value`,
+`gold_milligram_balance`, `retrieve_gold_milligram`). The word "ounce" does not
+appear anywhere in the repository.
+
+Compile errors are down from 109 to 59; the remainder are inside
+`create_trade_check`, which `trade_check.cpp` is intended to replace rather
+than repair.

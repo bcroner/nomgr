@@ -589,7 +589,7 @@ void simp_vector_append(__int64** v, __int64* vtop, __int64* vcap, __int64 data)
 void simp_queue_enqueue(Simp_Queue* queue, Simp_Queue* parm);
 Simp_Queue* simp_queue_dequeue(Simp_Queue* queue);
 Trade_Check* simp_queue_peek(Simp_Queue* queue);
-void make_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64* receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+void make_offer(Market* market, __int64 participant_id, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64* receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
 	__int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
 	__int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
 	__int64* participant_exclude, __int64 participant_exclude_vtop, __int64 participant_exclude_vcap, __int64* participant_require, __int64 participant_require_vtop, __int64 participant_require_vcap, __int64* participant_ban, __int64 participant_ban_vtop, __int64 participant_ban_vcap,
@@ -627,7 +627,7 @@ __int64 retrieve_participant_id(ID_Pool* id_pool);
 void submit_participant_id(ID_Pool* id_pool, __int64 id);
 Offer** create_offers();
 Participant* create_participant(Market* market);
-Account* create_account(Market* market, __int64 gold_milligram_balance, Voucher* vouchers, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap);
+Account* create_account(Market* market, __int64 gold_milligram_balance, __int64* holdings, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap);
 Bank* create_bank(Market* market, __int64* accounts, __int64* account_holders, __int64 accounts_vtop, __int64 accounts_vcap, __int64 account_holders_vtop, __int64 account_holders_vcap);
 Barter_System* create_barter_system();
 Market* create_market();

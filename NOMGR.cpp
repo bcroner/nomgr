@@ -442,7 +442,7 @@ Simp_Queue * simp_queue_dequeue(Simp_Queue* queue) {
 
 }
 
-void make_offer(Market* market, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64* receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
+void make_offer(Market* market, __int64 participant_id, __int64* participants_offering, __int64 participants_offering_vtop, __int64 participants_offering_vcap, Voucher* give, __int64 give_vtop, __int64 give_vcap, __int64* give_voucher_counts, __int64 give_voucher_counts_vtop, __int64 give_voucher_counts_vcap, Voucher* receive, __int64 receive_vtop, __int64 receive_vcap, __int64* receive_voucher_counts, __int64 receive_voucher_counts_vtop, __int64 receive_voucher_counts_vcap,
     __int64 valid_start, __int64 valid_end, __int64 subscription_interval, __int64 interval_type, __int64 intervals,
     __int64* insurance_policies_accepted, __int64 insurance_policies_accepted_vtop, __int64 insurance_policies_accepted_vcap, __int64* insurance_policies_applied, __int64 insurance_policies_applied_vtop, __int64 insurance_policies_applied_vcap,
     __int64* participants_require, __int64 participants_require_vtop, __int64 participants_require_vcap, __int64* participants_ban, __int64 participants_ban_vtop, __int64 participants_ban_vcap,
@@ -1028,14 +1028,14 @@ Participant* create_participant(Market* market) {
 	return participant;
 }
 
-Account* create_account(Market* market, __int64 gold_milligram_balance, Voucher* vouchers, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap) {
+Account* create_account(Market* market, __int64 gold_milligram_balance, __int64* holdings, __int64* voucher_counts, __int64 vouchers_vtop, __int64 vouchers_vcap, __int64 voucher_counts_vtop, __int64 voucher_counts_vcap) {
 
     Account* account = new Account();
 
     account->id = retrieve_account_id(market->id_pool);
 
     account->gold_milligram_balance = gold_milligram_balance;
-    account->vouchers = vouchers;
+    account->holdings = holdings;
     account->voucher_counts = voucher_counts;
     account->vouchers_vtop = vouchers_vtop;
     account->vouchers_vcap = vouchers_vcap;
@@ -1060,21 +1060,6 @@ Bank* create_bank(Market* market, Account* accounts, Participant** account_holde
 
     return bank;
 
-}
-
-Participant* create_participant(Market* market) {
-
-    Participant* participant = new Participant();
-
-    participant->id = retrieve_participant_id(market->id_pool);
-    participant->require = new __int64[16];
-    participant->bans = new __int64[16];
-    participant->require_vtop = -1;
-    participant->require_vcap = 16;
-    participant->bans_vtop = -1;
-    participant->bans_vcap = 16;
-
-    return participant;
 }
 
 Market* create_market() {
