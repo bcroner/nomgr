@@ -335,3 +335,87 @@ exist, an exponential solver, and a trade check that could not fail.
 **Left:** `NOMGR.cpp` still has 59 errors, all inside `create_trade_check`,
 which these modules replace rather than repair. Wiring `Market` / `Offer` /
 `Account` to call `is_triggerable` is the remaining work.
+
+---
+
+# The market layer is wired
+
+`NOMGR.cpp` **compiles** -- 109 errors down to 0, no warnings on the default
+build. `create_trade_check` and `check_trade` now call the tested modules, and
+the old SATSolver (450 lines of exponential search) is gone.
+
+The queue's second check, which is what NOMGR's design turns on:
+
+```cpp
+prev->next = nullptr;
+
+// Offers queued earlier may already have taken the resources, so
+// triggerability is re-tested before anything is dispersed.
+if (check_trade(ret->data))
+        return ret;
+
+return nullptr;
+```
+
+## Bugs the wiring surfaced
+
+`NOMGR.cpp` had an empty `main()`, so none of this had ever executed. Driving
+it found four things:
+
+**All four `remove_*` functions had their guard inverted.**
+
+```c
+if (ban_ix > -1)
+    return;                 // returns when the ban WAS found
+for (i = ban_ix; ...)       // only reached when ban_ix == -1
+    bans[i] = bans[i + 1];  // reads bans[-1]
+```
+
+They returned without removing when the item was present, and shifted from
+index -1 while decrementing the count when it was absent. The `create_*`
+functions use the same guard correctly -- to skip duplicates -- and the
+`remove_*` ones copied it when they needed the opposite.
+
+**`id_pool_retrieve` never handed out distinct ids.**
+
+```c
+if (*vtop == -1) { append(0); return 0; }   // always 0
+__int64 id = id_pool[*vtop + 1];            // one PAST the top, uninitialised
+```
+
+It is a free list for recycled ids with nothing to mint fresh ones. Every
+participant, account, bank and offer received id 0. `ID_Pool` now carries a
+`next_id` counter: pop a recycled id if one is waiting, otherwise mint.
+
+**`make_offer` computes `participant_ix` and never uses it** -- the offer is
+never associated with the participant that made it. Left alone; it needs a
+decision about what that association should be.
+
+**Loop bounds `i <= vtop + 1`** read one element past the end in the search
+loops. Corrected.
+
+## Where it stands
+
+| suite | tests |
+|---|---|
+| `sat2` | 11 |
+| `structural_check` | 13 |
+| `vault_check` | 10 |
+| `triggerable` | 8 |
+| `trade_check` | 13 |
+| `market` | 20 |
+| **total** | **75** |
+
+```
+make            # build
+make test       # run all suites
+make bench      # old solver against new
+```
+
+## Still open
+
+- `make_offer` does not associate an offer with its participant
+- `create_offer` writes `offer->gives->id` rather than `offer->gives[i].id`, so
+  every give overwrites element 0
+- `main()` is empty (renamed `nomgr_unused_main` so tests can link)
+- the legal system, vouchers and Article V structures are defined but unused
